@@ -24,19 +24,30 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
   
   <style>
-    /* Базовые стили и переменные (позже они будут подтягиваться из config.js) */
     :root {
       --accent-color: #f97316;
-      --main-bg: #ffffff;
     }
 
-    #svg_path_edges {
-        stroke: var(--accent-color);
-        stroke-opacity: 0.3;
-        transition: 0.3s;
+    /* БАЗОВЫЙ ЦВЕТ САЙТА */
+    html, body { 
+      background-color: #0f1419; 
     }
-    .bg-voronoi-light:hover #svg_path_edges {
-        stroke-opacity: 0.8;
+
+    /* ВАШ ИСХОДНЫЙ ВЕКТОРНЫЙ ФОН */
+    .bg-layer {
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%;
+      z-index: 0; /* Лежит на самом дне */
+      pointer-events: none; /* Пропускает клики */
+      
+      /* Подключаем ваш файл как есть, без искажений */
+      background-image: url('./voronoi.svg');
+      background-size: 1920px 1080px; /* Строго ваш размер */
+      background-position: center top;
+      background-repeat: no-repeat;
     }
 
     /* Навигация и эффекты появления */
@@ -84,53 +95,25 @@
     .animate-float-3 { animation: float-y 4.5s ease-in-out infinite 0.5s; }
     .animate-float-4 { animation: float-y 5.5s ease-in-out infinite 1.5s; }
     
-    /* Бегущая строка галереи */
-    @keyframes scroll-x { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-    .animate-scroll-x { animation: scroll-x 35s linear infinite; width: max-content; }
-
     /* Вертикальные отзывы */
     @keyframes scroll-y { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
     .animate-scroll-y-fast { animation: scroll-y 35s linear infinite; }
     .animate-scroll-y-normal { animation: scroll-y 25s linear infinite; }
     .mask-vertical { mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); }
 
-    /* МОБИЛЬНАЯ НАДЁЖНОСТЬ: фон сразу чтобы не было белого экрана */
-    html, body { background-color: #1a1a2e; }
-    
-    /* Если JS завис или медленный — через 0.5с показать всё */
+    /* Если JS завис или медленный */
     @keyframes force-reveal { to { opacity: 1; transform: none; } }
-    /* iOS Safari: фикс 100vh (адресная строка Safari) */
     @supports (-webkit-touch-callout: none) {
       .h-screen { height: -webkit-fill-available; }
       .min-h-screen { min-height: -webkit-fill-available; }
     }
     .reveal { animation: force-reveal 0s 0.8s forwards; }
-    
-    /* Элементы hero показываем сразу — они всегда на экране */
     .hero-reveal { opacity: 1 !important; transform: none !important; }
-
-    /* ИСПРАВЛЕНИЕ: Слой фона */
-    .bg-layer {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      z-index: -1; pointer-events: none;
-      background-color: var(--main-bg);
-      background-image: url('voronoi.svg'); 
-      background-size: 1920px 1920px;
-      background-repeat: repeat;
-    }
   </style>
-  
-<style>
-/* Возвращаем верстку в нормальное состояние, просто принудительно включаем видимость */
-html, body, header, main, section, div, span, p, a, img {
-    opacity: 1 !important;
-    visibility: visible !important;
-}
-</style>
   <script src="config.js"></script>
 </head>
 
-<body class="antialiased text-gray-900" style="font-family: var(--font-family-sans);">
+<body class="antialiased text-gray-300" style="font-family: var(--font-family-sans);">
 
   <div class="bg-layer"></div>
 
@@ -217,8 +200,9 @@ html, body, header, main, section, div, span, p, a, img {
   </div>
   </header>
 
-  <main>
-    <section class="relative overflow-hidden flex flex-col items-center justify-center min-h-[700px] py-20">
+  <main class="relative z-10">
+    
+    <section class="relative overflow-hidden flex flex-col items-center justify-center min-h-[700px] py-20 bg-transparent">
       <div class="absolute inset-0 z-0 bg-gray-900">
           <img src="jpg/1.jpg" class="hero-bg bg-1" alt="Фон 1">
           <img src="jpg/2.jpg" class="hero-bg bg-2" loading="lazy" alt="Фон 2">
@@ -229,7 +213,7 @@ html, body, header, main, section, div, span, p, a, img {
         <div class="inline-block border border-gray-500 rounded-full px-4 py-1 mb-6">
           <span class="text-xs font-bold tracking-widest text-[var(--accent-color)] uppercase">Промышленное производство • FDM • SLA</span>
         </div>
-        <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight leading-tight">
+        <h1 class="text-2xl md:text-5xl font-extrabold text-white mb-6 tracking-tight leading-tight">
           Промышленная 3D-печать<br>
           <span class="text-[var(--accent-color)]">от прототипа до серии</span>
         </h1>
@@ -250,12 +234,13 @@ html, body, header, main, section, div, span, p, a, img {
     </section>
 
     <div id="products"></div>
-    <section id="process" class="py-20 relative overflow-hidden">
-      <div class="container mx-auto px-6 relative reveal">
+    
+    <section id="process" class="py-20 relative overflow-hidden bg-transparent">
+      <div class="container mx-auto px-6 relative z-10 reveal">
         <div class="text-center mb-16">
           <span class="text-[var(--accent-color)] font-bold uppercase tracking-wider text-sm">Процесс</span>
-          <h2 class="text-3xl md:text-4xl font-bold mt-2">Как мы работаем</h2>
-          <p class="text-gray-500 mt-4">Четыре простых шага от цифровой модели до готовой детали</p>
+          <h2 class="text-2xl md:text-4xl text-white font-bold mt-2">Как мы работаем</h2>
+          <p class="text-gray-400 mt-4">Четыре простых шага от цифровой модели до готовой детали</p>
         </div>
         <div class="hidden md:flex justify-center gap-8 lg:gap-16 items-center relative pt-12 pb-24 max-w-5xl mx-auto">
           
@@ -264,56 +249,57 @@ html, body, header, main, section, div, span, p, a, img {
           </svg>
 
           <div class="relative z-10 w-1/4 flex flex-col items-center text-center -mt-24 animate-float-1">
-            <div class="w-[var(--circle-size)] h-[var(--circle-size)] bg-white rounded-full border-4 border-[var(--accent-color)] flex items-center justify-center text-[var(--accent-color)] mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
-              <svg class="w-[var(--icon-size)] h-[var(--icon-size)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+            <div class="w-20 h-20 bg-white rounded-full border-4 border-[var(--accent-color)] flex items-center justify-center text-[var(--accent-color)] mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
             </div>
-            <h3 class="font-bold text-lg mb-2">Загрузка файла</h3>
+            <h3 class="font-bold text-lg mb-2 text-white">Загрузка файла</h3>
           </div>
 
           <div class="relative z-10 w-1/4 flex flex-col items-center text-center mt-24 animate-float-2">
-            <div class="w-[var(--circle-size)] h-[var(--circle-size)] bg-white rounded-full border-4 border-grey-500 flex items-center justify-center text-gray-500/70 mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
-              <svg class="w-[var(--icon-size)] h-[var(--icon-size)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            <div class="w-20 h-20 bg-white rounded-full border-4 border-gray-500 flex items-center justify-center text-gray-500/70 mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </div>
-            <h3 class="font-bold text-lg mb-2">Утверждение</h3>
+            <h3 class="font-bold text-lg mb-2 text-white">Утверждение</h3>
           </div>
 
           <div class="relative z-10 w-1/4 flex flex-col items-center text-center -mt-24 animate-float-3">
-            <div class="w-[var(--circle-size)] h-[var(--circle-size)] bg-white rounded-full border-4 border-[var(--accent-color)] flex items-center justify-center text-[var(--accent-color)] mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
-              <svg class="w-[var(--icon-size)] h-[var(--icon-size)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+            <div class="w-20 h-20 bg-white rounded-full border-4 border-[var(--accent-color)] flex items-center justify-center text-[var(--accent-color)] mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
             </div>
-            <h3 class="font-bold text-lg mb-2">Печать</h3>
+            <h3 class="font-bold text-lg mb-2 text-white">Печать</h3>
           </div>
 
           <div class="relative z-10 w-1/4 flex flex-col items-center text-center mt-24 animate-float-4">
-            <div class="w-[var(--circle-size)] h-[var(--circle-size)] bg-white rounded-full border-4 border-grey-500 flex items-center justify-center text-gray-500/70 mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
-              <svg class="w-[var(--icon-size)] h-[var(--icon-size)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+            <div class="w-20 h-20 bg-white rounded-full border-4 border-gray-500 flex items-center justify-center text-gray-500/70 mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
+              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
             </div>
-            <h3 class="font-bold text-lg mb-2">Отправка</h3>
+            <h3 class="font-bold text-lg mb-2 text-white">Отправка</h3>
           </div>
           
         </div>
-        </div>
+      </div>
     </section>
 
     <div id="materials"></div>
-    <section id="services" class="py-20 bg-gray-300/75 border-t border-gray-100">
-      <div class="container mx-auto px-4 max-w-7xl reveal"> 
+
+    <section id="services" class="py-20 bg-transparent relative z-20">
+      <div class="container mx-auto px-4 max-w-7xl reveal relative z-10"> 
         <div class="text-center mb-16">
           <span class="text-[var(--accent-color)] font-bold uppercase tracking-wider text-sm">Услуги</span>
-          <h2 class="text-3xl md:text-4xl font-bold mt-2">Наши услуги</h2>
+          <h2 class="text-3xl md:text-4xl text-white font-bold mt-2">Наши услуги</h2>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group">
+          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group bg-industrial-900/50 backdrop-blur-sm shadow-xl border border-white/5">
             <img src="jpg/4.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-110">
             <div class="absolute inset-0 bg-gray-900/80 z-10"></div>
             <div class="relative z-20 flex flex-col h-full">
-              <div class="w-24 h-24 bg-orange-50 text-[var(--accent-color)] rounded-lg flex items-center justify-center font-bold text-sm mb-6">FDM</div>
+              <div class="w-12 h-12 bg-orange-50 text-[var(--accent-color)] rounded-lg flex items-center justify-center font-bold text-sm mb-6">FDM</div>
               <h3 class="text-xl font-bold text-white mb-3">Инженерная FDM-печать</h3>
               <p class="text-gray-300 text-sm flex-grow mb-6">Функциональные прототипы и серийные детали из ABS, PETG, Nylon и композитов.</p>
               <a href="fdm.html" class="text-[var(--accent-color)] text-sm font-bold hover:text-white transition-colors flex items-center gap-1">Заказать <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
             </div>
           </div>
-          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group">
+          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group bg-industrial-900/50 backdrop-blur-sm shadow-xl border border-white/5">
             <img src="jpg/5.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-110">
             <div class="absolute inset-0 bg-gray-900/80 z-10"></div>
             <div class="relative z-20 flex flex-col h-full">
@@ -323,7 +309,7 @@ html, body, header, main, section, div, span, p, a, img {
               <a href="sla.html" class="text-[var(--accent-color)] text-sm font-bold hover:text-white transition-colors flex items-center gap-1">Заказать <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
             </div>
           </div>
-          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group">
+          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group bg-industrial-900/50 backdrop-blur-sm shadow-xl border border-white/5">
             <img src="jpg/6.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-110">
             <div class="absolute inset-0 bg-gray-900/80 z-10"></div>
             <div class="relative z-20 flex flex-col h-full">
@@ -333,7 +319,7 @@ html, body, header, main, section, div, span, p, a, img {
               <a href="modeling.html" class="text-[var(--accent-color)] text-sm font-bold hover:text-white transition-colors flex items-center gap-1">Заказать <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
             </div>
           </div>
-          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group">
+          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group bg-industrial-900/50 backdrop-blur-sm shadow-xl border border-white/5">
             <img src="jpg/7.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-110">
             <div class="absolute inset-0 bg-gray-900/80 z-10"></div>
             <div class="relative z-20 flex flex-col h-full">
@@ -347,16 +333,16 @@ html, body, header, main, section, div, span, p, a, img {
       </div>
     </section>
 
-<section id="gallery" class="py-24 relative overflow-hidden">
+    <section id="gallery" class="py-24 relative overflow-hidden bg-transparent">
       <div class="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
         <div class="text-center mb-16 reveal">
           <span class="text-[var(--accent-color)] font-bold uppercase tracking-wider text-sm">Опыт клиентов</span>
-          <h2 class="text-3xl md:text-4xl font-bold mt-2">Что о нас говорят</h2>
+          <h2 class="text-3xl md:text-4xl text-white font-bold mt-2">Что о нас говорят</h2>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
-          <div id="portfolio-slider" class="w-full h-[500px] bg-industrial-900 rounded-3xl overflow-hidden relative shadow-2xl reveal group mb-12 lg:mb-0">
+          <div id="portfolio-slider" class="w-full h-[500px] bg-industrial-900/80 backdrop-blur-sm rounded-3xl overflow-hidden relative shadow-2xl reveal group mb-12 lg:mb-0 border border-white/5">
             
             <div class="slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100">
               <img src="jpg/gallery/1.jpg" loading="lazy" alt="Корпус устройства" class="w-full h-full object-cover">
@@ -395,33 +381,33 @@ html, body, header, main, section, div, span, p, a, img {
             </div>
           </div>
 
-<div class="h-[500px] mask-vertical overflow-hidden relative group grid grid-cols-1 md:grid-cols-2 gap-6 reveal">
+          <div class="h-[500px] mask-vertical overflow-hidden relative group grid grid-cols-1 md:grid-cols-2 gap-6 reveal">
             
             <div class="review-container flex flex-col animate-scroll-y-fast w-full group-hover:[animation-play-state:paused]">
-              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 text-gray-900">
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <img src="./jpg/avatars/4.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Леон&background=f1f5f9&color=64748b'" class="w-10 h-10 rounded-full object-cover">
                   <div><h4 class="font-bold text-sm">Леон</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
                 </div>
                 <p class="text-gray-600 text-sm">Детализация барельефа на SLA просто супер. Отличная работа.</p>
               </div>
-              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 text-gray-900">
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <img src="./jpg/avatars/1.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Дмитрий+Р&background=f1f5f9&color=64748b'" class="w-10 h-10 rounded-full object-cover">
                   <div><h4 class="font-bold text-sm">Дмитрий Романов</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
                 </div>
                 <p class="text-gray-600 text-sm">Заказывал партию голов для марионеток, прочность пластика на высоте.</p>
               </div>
-              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 text-gray-900">
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <img src="./jpg/avatars/2.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Анна+С&background=f1f5f9&color=64748b'" class="w-10 h-10 rounded-full object-cover">
                   <div><h4 class="font-bold text-sm">Анна Смирнова</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
                 </div>
                 <p class="text-gray-600 text-sm">Быстрая печать FDM. Геометрия не поплыла, усадки почти нет.</p>
               </div>
-              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 text-gray-900">
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <img src="./jpg/avatars/3.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Игорь+В&background=f1f5f9&color=64748b'" class="w-10 h-10 rounded-full object-cover">
                   <div><h4 class="font-bold text-sm">Игорь В.</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
                 </div>
                 <p class="text-gray-600 text-sm">Заказывал печать сложной архитектурной формы. SLA справился на ура.</p>
@@ -429,30 +415,30 @@ html, body, header, main, section, div, span, p, a, img {
             </div>
 
             <div class="review-container hidden md:flex flex-col animate-scroll-y-normal w-full group-hover:[animation-play-state:paused]">
-              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 text-gray-900">
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <img src="./jpg/avatars/5.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Максим+С&background=f1f5f9&color=64748b'" class="w-10 h-10 rounded-full object-cover">
                   <div><h4 class="font-bold text-sm">Максим Сергеевич</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
                 </div>
                 <p class="text-gray-600 text-sm">Сделали быстро, слои спеклись намертво. Инженерный узел из PETG.</p>
               </div>
-              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 text-gray-900">
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <img src="./jpg/avatars/6.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Виктория&background=f1f5f9&color=64748b'" class="w-10 h-10 rounded-full object-cover">
                   <div><h4 class="font-bold text-sm">Виктория</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
                 </div>
                 <p class="text-gray-600 text-sm">Спасибо за помощь с 3D-моделированием! Очень подробно проконсультировали.</p>
               </div>
-              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 text-gray-900">
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <img src="./jpg/avatars/7.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Александр&background=f1f5f9&color=64748b'" class="w-10 h-10 rounded-full object-cover">
                   <div><h4 class="font-bold text-sm">Александр</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
                 </div>
                 <p class="text-gray-600 text-sm">Печатали партию корпусов. Подобрали правильный пластик под нагрузки.</p>
               </div>
-              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 text-gray-900">
                 <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <img src="./jpg/avatars/8.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Евгений+М&background=f1f5f9&color=64748b'" class="w-10 h-10 rounded-full object-cover">
                   <div><h4 class="font-bold text-sm">Евгений М.</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
                 </div>
                 <p class="text-gray-600 text-sm">Переходники для вентиляции встали как родные. Размеры совпали до десятых.</p>
@@ -464,9 +450,7 @@ html, body, header, main, section, div, span, p, a, img {
       </div>
     </section>
 
-    <section class="py-24 bg-industrial-900 relative overflow-hidden">
-      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[var(--accent-color)] opacity-5 rounded-full blur-3xl z-0 pointer-events-none"></div>
-      
+    <section class="py-24 relative overflow-hidden bg-transparent">
       <div class="max-w-4xl mx-auto px-4 text-center relative z-10 reveal">
         <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6">Готовы воплотить проект в пластике?</h2>
         <p class="text-gray-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto">Перейдите в конфигуратор, чтобы выбрать материал, указать параметры печати и получить моментальный расчет стоимости.</p>
@@ -480,7 +464,7 @@ html, body, header, main, section, div, span, p, a, img {
 
   </main>
 
-  <footer class="bg-industrial-900 text-gray-400 py-16 border-t border-white/5 relative z-10">
+  <footer class="bg-industrial-900/80 backdrop-blur-md text-gray-400 py-16 border-t border-white/10 relative z-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
         <div class="lg:col-span-1">
@@ -529,19 +513,17 @@ html, body, header, main, section, div, span, p, a, img {
   </footer>
 
   <script>
-    // Скрипты для шапки и анимаций (без тяжелой логики формы)
+    // Скрипты для шапки и анимаций
     const siteHeader = document.getElementById('site-header');
     window.addEventListener('scroll', () => {
       siteHeader.classList.toggle('header-scrolled', window.scrollY > 40);
     });
-
 
     // Мобильное меню
     const menuBtn = document.getElementById('menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     menuBtn.addEventListener('click', () => {
       mobileMenu.classList.toggle('hidden');
-      // Анимируем иконку бургера
       const icon = menuBtn.querySelector('svg path');
       if (!mobileMenu.classList.contains('hidden')) {
         icon.setAttribute('d', 'M6 18L18 6M6 6l12 12');
@@ -549,7 +531,7 @@ html, body, header, main, section, div, span, p, a, img {
         icon.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
       }
     });
-    // Закрываем меню при клике на якорные ссылки в мобильном меню
+
     const mobileLinks = mobileMenu.querySelectorAll('a[href^="#"]');
     mobileLinks.forEach(link => {
         link.addEventListener('click', () => {
@@ -569,7 +551,6 @@ html, body, header, main, section, div, span, p, a, img {
     );
     revealEls.forEach(el => revealObserver.observe(el));
     
-    // Немедленно показываем элементы уже видимые при загрузке (для мобильных)
     setTimeout(() => {
       revealEls.forEach(el => {
         const rect = el.getBoundingClientRect();
@@ -590,26 +571,22 @@ html, body, header, main, section, div, span, p, a, img {
       let currentSlide = 0;
 
       setInterval(() => {
-        // Прячем текущий слайд и гасим точку
         slides[currentSlide].classList.remove('opacity-100');
         slides[currentSlide].classList.add('opacity-0');
         dots[currentSlide].classList.replace('bg-[var(--accent-color)]', 'bg-white/30');
 
-        // Переходим к следующему
         currentSlide = (currentSlide + 1) % slides.length;
 
-        // Показываем новый слайд и зажигаем точку
         slides[currentSlide].classList.remove('opacity-0');
         slides[currentSlide].classList.add('opacity-100');
         dots[currentSlide].classList.replace('bg-white/30', 'bg-[var(--accent-color)]');
-      }, 4000); // 4000 мс = 4 секунды на каждый слайд
+      }, 4000); 
     });
 
-      // Автоматическая бесконечная циркуляция отзывов
+    // Автоматическая бесконечная циркуляция отзывов
     document.querySelectorAll('.review-container').forEach(lane => {
       lane.innerHTML += lane.innerHTML;
     });
-
   </script>
 </body>
 </html>
