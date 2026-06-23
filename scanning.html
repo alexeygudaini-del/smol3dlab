@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Высокоточное 3D-сканирование | Smol3dLab</title>
+  <meta name="description" content="Услуги 3D-сканирования и реверс-инжиниринга от Smol3dLab." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { 
+      theme: { 
+        extend: { 
+          colors: { 
+            brand: { DEFAULT: 'var(--accent-color, #f97316)', dark: 'var(--accent-color, #ea580c)', light: 'var(--accent-color, #fb923c)' }, 
+            industrial: { 900: '#0f1419', 800: '#1a2332', 700: '#243044' } 
+          },
+          backgroundColor: {
+            white: 'var(--main-bg, #ffffff)',
+            'slate-50': 'var(--card-bg, #f8fafc)',
+            'gray-50': 'var(--card-bg, #f9fafb)',
+          },
+          textColor: {
+            'gray-900': 'var(--text-color, #111827)',
+          }, 
+          fontFamily: { sans: ['"Inter"', 'sans-serif'] } 
+        } 
+      } 
+    };
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    html, body { background-color: #1a1a2e; }
+    .header-scrolled { background: rgba(15, 20, 25, 0.95); backdrop-filter: blur(12px); box-shadow: 0 1px 0 rgba(255,255,255,0.06); }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .nav-dropdown { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(-0.5rem); transform-origin: top; transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s; }
+    .nav-dropdown-group:hover .nav-dropdown, .nav-dropdown-group:focus-within .nav-dropdown { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    .nav-dropdown-chevron { transition: transform 0.2s ease; }
+    .nav-dropdown-group:hover .nav-dropdown-chevron, .nav-dropdown-group:focus-within .nav-dropdown-chevron { transform: rotate(180deg); }
+  
+    /* iOS Safari: фикс 100vh (адресная строка Safari) */
+    @supports (-webkit-touch-callout: none) {
+      .h-screen { height: -webkit-fill-available; }
+      .min-h-screen { min-height: -webkit-fill-available; }
+    }
+    </style>
+  <script src="config.js"></script>
+</head>
+<body class="font-sans antialiased text-gray-900 bg-white">
+
+  <!-- HEADER -->
+  <header id="site-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-industrial-900/80 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-[72px]">
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <span class="w-9 h-9 rounded bg-brand flex items-center justify-center text-white font-extrabold text-sm tracking-tighter">S3</span>
+          <span class="text-white font-bold text-lg tracking-tight">Smol<span class="text-brand">3d</span>Lab</span>
+        </a>
+        <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-300">
+          <div class="nav-dropdown-group relative">
+            <button type="button" class="flex items-center gap-1.5 hover:text-white transition-colors py-2" aria-expanded="false" aria-haspopup="true">
+              Продукты
+              <svg class="nav-dropdown-chevron w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="nav-dropdown absolute left-1/2 top-full pt-3 z-50 origin-top">
+              <div class="w-64 bg-white/85 backdrop-blur-md rounded-xl shadow-lg border border-white/10 py-2 overflow-hidden">
+                <p class="px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400">Направления</p>
+                <a href="sla.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-slate-50 hover:text-brand transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-violet-50 text-violet-600 text-[10px] font-bold flex items-center justify-center shrink-0">SLA</span>
+                  <span class="text-sm font-medium">Высокоточная печать (SLA)</span>
+                </a>
+                <a href="fdm.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-slate-50 hover:text-brand transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-orange-50 text-brand text-[10px] font-bold flex items-center justify-center shrink-0">FDM</span>
+                  <span class="text-sm font-medium">Инженерная печать (FDM)</span>
+                </a>
+                <a href="modeling.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-slate-50 hover:text-brand transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-blue-50 text-blue-600 text-[10px] font-bold flex items-center justify-center shrink-0">CAD</span>
+                  <span class="text-sm font-medium">3D-моделирование</span>
+                </a>
+                <a href="scanning.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-slate-50 hover:text-brand transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold flex items-center justify-center shrink-0">3D</span>
+                  <span class="text-sm font-medium text-brand">3D-сканирование</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <a href="index.html#materials" class="hover:text-white transition-colors">Материалы</a>
+          <a href="models.html" class="hover:text-white transition-colors">3D Модели</a>
+          <a href="index.html#gallery" class="hover:text-white transition-colors">Галерея</a>
+        </nav>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <a href="index.html#calculator" class="inline-flex items-center px-4 py-2 rounded-md bg-brand hover:bg-brand-dark text-white text-sm font-semibold transition-colors shadow-lg shadow-brand/20">Получить расчёт</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SCANNING -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-industrial-900">
+      <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2000')] bg-cover bg-center opacity-10"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-industrial-900 to-transparent"></div>
+      
+      <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left">
+        <p class="inline-block px-4 py-1.5 rounded-full border border-white/20 text-brand-light text-xs font-semibold uppercase tracking-widest mb-6">Оцифровка объектов</p>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 max-w-3xl">
+          Высокоточное <br class="hidden sm:block" />
+          <span class="text-brand">3D-сканирование</span>
+        </h1>
+        <p class="text-lg text-gray-300 max-w-2xl leading-relaxed mb-10">
+          Быстрый перевод физических объектов любого размера в точную цифровую среду для реверс-инжиниринга и контроля геометрии.
+        </p>
+      </div>
+    </section>
+
+    <!-- ОПИСАНИЕ УСЛУГИ -->
+    <section class="py-20 sm:py-28 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="reveal">
+            <span class="text-brand text-sm font-semibold uppercase tracking-widest">Возможности</span>
+            <h2 class="mt-3 text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Копирование с субмиллиметровой точностью</h2>
+            <p class="text-gray-600 leading-relaxed mb-6">
+              Мы используем профессиональные оптические сканеры для захвата геометрии объектов со сложными поверхностями. Это первый и самый важный шаг для восстановления изношенных деталей или тюнинга.
+            </p>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <svg class="w-6 h-6 text-brand shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-gray-700"><strong>Реверс-инжиниринг:</strong> создание твердотельной CAD-модели по скану.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-6 h-6 text-brand shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-gray-700"><strong>Контроль геометрии:</strong> сравнение напечатанной детали с исходной CAD-моделью.</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-6 h-6 text-brand shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-gray-700">Сканирование объектов сложной органической формы.</span>
+              </li>
+            </ul>
+          </div>
+          <div class="reveal rounded-2xl overflow-hidden border border-gray-200 shadow-xl" style="transition-delay: 0.1s">
+            <img src="https://images.unsplash.com/photo-1537498425277-c283d32ef9db?q=80&w=1000" alt="Процесс 3D сканирования" class="w-full h-auto object-cover hover:scale-105 transition-transform duration-700">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- СЕКЦИЯ: ПРИЗЫВ К ДЕЙСТВИЮ -->
+    <section class="py-20 sm:py-28 bg-industrial-900 text-center relative overflow-hidden">
+      <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">Нужно оцифровать деталь?</h2>
+        <p class="text-gray-400 mb-10 text-lg">Свяжитесь с нами для оценки стоимости сканирования и сроков перевода в CAD-формат.</p>
+        <a href="index.html#calculator" class="inline-flex items-center px-8 py-4 rounded-md bg-brand hover:bg-brand-dark text-white text-lg font-bold transition-all shadow-xl shadow-brand/30 hover:scale-[1.02]">
+          Узнать цену
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-industrial-900 text-gray-400 py-16 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div class="lg:col-span-1">
+          <a href="index.html" class="flex items-center gap-2.5 mb-4">
+            <span class="w-9 h-9 rounded bg-brand flex items-center justify-center text-white font-extrabold text-sm">S3</span>
+            <span class="text-white font-bold text-lg">Smol<span class="text-brand">3d</span>Lab</span>
+          </a>
+          <p class="text-sm leading-relaxed">Smol 3D Lab  — промышленная 3D-печать и полный цикл производства от прототипа до серии.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Навигация</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="index.html#products" class="hover:text-white transition-colors">Продукты</a></li>
+            <li><a href="index.html#materials" class="hover:text-white transition-colors">Материалы</a></li>
+            <li><a href="index.html#services" class="hover:text-white transition-colors">Услуги</a></li>
+            <li><a href="index.html#gallery" class="hover:text-white transition-colors">Галерея</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Услуги</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="fdm.html" class="hover:text-white transition-colors">FDM-печать</a></li>
+            <li><a href="sla.html" class="hover:text-white transition-colors">SLA-печать</a></li>
+            <li><a href="modeling.html" class="hover:text-white transition-colors">CAD-моделирование</a></li>
+            <li><a href="scanning.html" class="hover:text-white transition-colors text-brand">3D-сканирование</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Контакты</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="index.html#calculator" class="hover:text-white transition-colors">Получить расчёт</a></li>
+            <li><span>info@smol3dlab.ru</span></li>
+            <li><span>+7 (900) 123-25-34</span></li>
+            <li><span>г. Шахты, Россия</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const siteHeader = document.getElementById('site-header');
+    window.addEventListener('scroll', () => siteHeader.classList.toggle('header-scrolled', window.scrollY > 40));
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); revealObserver.unobserve(entry.target); }});
+    }, { threshold: 0, rootMargin: '0px 0px 50px 0px' });
+    revealEls.forEach(el => revealObserver.observe(el));
+    setTimeout(() => {
+      revealEls.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) el.classList.add('visible');
+      });
+    }, 100);
+  </script>
+</body>
+</html>

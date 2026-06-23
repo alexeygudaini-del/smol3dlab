@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smol3dLab — Промышленная 3D-печать от прототипа до серии</title>
+  <meta name="description" content="Smol3dLab — промышленная 3D-печать FDM и SLA, CAD-моделирование, 3D-сканирование. От прототипа до серийного производства." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#f97316', dark: '#ea580c', light: '#fb923c' },
+            industrial: { 900: '#0f1419', 800: '#1a2332', 700: '#243044', 400: '#4a658e' },
+          },
+          fontFamily: {
+            sans: ['"Inter"', '"Segoe UI"', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <style>
+    html, body { background-color: #1a1a2e; }
+    /* Теперь это будет работать! */
+    #svg_path_edges {
+        stroke: var(--accent-color, #f97316);
+        stroke-opacity: 0.3;
+        transition: 0.3s;
+    }
+    /* Можно даже добавить эффект при наведении */
+    .bg-voronoi-light:hover #svg_path_edges {
+        stroke-opacity: 0.8;
+    }
+
+    /* --- НАВИГАЦИЯ И HEADER --- */
+    .header-scrolled {
+      background: rgba(15, 20, 25, 0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .reveal {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      animation: force-reveal 0s 0.8s forwards;
+    }
+    @keyframes force-reveal { to { opacity: 1; transform: none; } }
+    /* iOS Safari: фикс 100vh (адресная строка Safari) */
+    @supports (-webkit-touch-callout: none) {
+      .h-screen { height: -webkit-fill-available; }
+      .min-h-screen { min-height: -webkit-fill-available; }
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    select, input { font-family: inherit; }
+    
+    /* Dropdown: Продукты */
+    .nav-dropdown {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-50%) translateY(-0.5rem);
+      transform-origin: top;
+      transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+    }
+    .nav-dropdown-group:hover .nav-dropdown,
+    .nav-dropdown-group:focus-within .nav-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    .nav-dropdown-chevron { transition: transform 0.2s ease; }
+    .nav-dropdown-group:hover .nav-dropdown-chevron,
+    .nav-dropdown-group:focus-within .nav-dropdown-chevron { transform: rotate(180deg); }
+
+    /* --- 1. АНИМАЦИЯ ФОНА (HERO CROSSFADE) --- */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    /* 1. Лежит на дне всегда видимая */
+    .bg-1 { z-index: 1; }
+    /* 2. Плавно появляется поверх первой */
+    .bg-2 {
+      z-index: 2;
+      opacity: 0;
+      animation: fade-2 12s infinite;
+    }
+    /* 3. Плавно появляется поверх второй */
+    .bg-3 {
+      z-index: 3;
+      opacity: 0;
+      animation: fade-3 12s infinite;
+    }
+    /* Цикл 12 секунд. Вторая картинка видна с 4 по 7 секунду */
+    @keyframes fade-2 {
+      0%, 25% { opacity: 0; }
+      33%, 58% { opacity: 1; }
+      66%, 100% { opacity: 0; }
+    }
+    /* Третья картинка видна с 8 по 11 секунду */
+    @keyframes fade-3 {
+      0%, 58% { opacity: 0; }
+      66%, 91% { opacity: 1; }
+      100% { opacity: 0; } 
+    }
+
+    /* --- 2. ЛЕВИТАЦИЯ ШАГОВ (ПРОЦЕСС) --- */
+    @keyframes float-y {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); } 
+    }
+    .animate-float-1 { animation: float-y 4s ease-in-out infinite; }
+    .animate-float-2 { animation: float-y 5s ease-in-out infinite 1s; }
+    .animate-float-3 { animation: float-y 4.5s ease-in-out infinite 0.5s; }
+    .animate-float-4 { animation: float-y 5.5s ease-in-out infinite 1.5s; }
+    
+    /* --- 3. БЕГУЩАЯ СТРОКА (ГАЛЕРЕЯ) --- */
+    @keyframes scroll-x {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-scroll-x {
+      animation: scroll-x 35s linear infinite;
+      width: max-content;
+    }
+
+    /* --- 4. ВЕРТИКАЛЬНЫЕ ОТЗЫВЫ --- */
+    @keyframes scroll-y {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-50%); }
+    }
+    .animate-scroll-y-fast { animation: scroll-y 20s linear infinite; }
+    .animate-scroll-y-normal { animation: scroll-y 25s linear infinite; }
+    .animate-scroll-y-slow { animation: scroll-y 30s linear infinite; }
+
+    /* Плавное затухание краев для отзывов */
+    .mask-vertical {
+      -webkit-mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
+      mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
+    }
+
+    body {
+      background-color: var(--main-bg, #ffffff);
+      color: var(--text-color, #111827);
+    }
+    /* --- 6. СВЕТЛЫЙ ФОН VORONOI --- */
+    .bg-voronoi-light {
+        background-color: var(--main-bg, #ffffff);
+        /* Убедись, что файл voronoi.svg лежит в той же папке, что и index.html */
+        background-image: url('voronoi.svg'); 
+        background-size: 2200px 2200px; /* Укажи размер, соответствующий твоему SVG */
+        background-repeat: repeat;
+    }
+
+    /* --- 7. РЕКЛАМНЫЙ БЛОК --- */
+    .ad-slot-horizontal {
+      width: 100%;
+      min-height: 90px;
+      background-color: #f3f4f6; /* bg-gray-100 */
+      border: 2px dashed #d1d5db; /* border-gray-300 */
+      margin-top: 2rem; /* my-8 */
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+
+    .model-card-link { text-decoration: none; color: inherit; display: block; transition: 0.3s; }
+    .model-card-link:hover { transform: translateY(-5px); }
+  </style>
+  <script src="config.js"></script>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- СЕКЦИЯ: HEADER — НАЧАЛО -->
+  <header id="site-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-industrial-900/80 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-[72px]">
+        <!-- Логотип -->
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <span class="w-9 h-9 rounded bg-[var(--accent-color)] flex items-center justify-center text-white font-extrabold text-sm tracking-tighter">S3</span>
+          <span class="text-white font-bold text-lg tracking-tight">Smol<span class="text-[var(--accent-color)]">3d</span>Lab</span>
+        </a>
+
+        <!-- Навигация -->
+        <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-300">
+          <!-- Dropdown: Продукты -->
+          <div class="nav-dropdown-group relative">
+            <button type="button" class="flex items-center gap-1.5 hover:text-white transition-colors py-2" aria-expanded="false" aria-haspopup="true" id="products-nav-trigger">
+              Продукты
+              <svg class="nav-dropdown-chevron w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="nav-dropdown absolute left-1/2 top-full pt-3 z-50 origin-top">
+              <div class="w-64 bg-voronoi-light/85 backdrop-blur-md rounded-xl shadow-lg border border-white/10 py-2 overflow-hidden">
+                <p class="px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400">Направления</p>
+                <a href="sla.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-violet-50 text-violet-600 text-[10px] font-bold flex items-center justify-center shrink-0">SLA</span>
+                  <span class="text-sm font-medium">Высокоточная печать (SLA)</span>
+                </a>
+                <a href="fdm.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-orange-50 text-[var(--accent-color)] text-[10px] font-bold flex items-center justify-center shrink-0">FDM</span>
+                  <span class="text-sm font-medium">Инженерная печать (FDM)</span>
+                </a>
+                <a href="modeling.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-blue-50 text-blue-600 text-[10px] font-bold flex items-center justify-center shrink-0">CAD</span>
+                  <span class="text-sm font-medium">3D-моделирование</span>
+                </a>
+                <a href="scanning.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold flex items-center justify-center shrink-0">3D</span>
+                  <span class="text-sm font-medium">3D-сканирование</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        <a href="index.html#materials" class="hover:text-white transition-colors">Материалы</a>
+        <a href="models.html" class="hover:text-white transition-colors">3D Модели</a>
+        <a href="index.html#gallery" class="hover:text-white transition-colors">Галерея</a>
+        </nav>
+
+        <!-- Действия -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <a href="#" class="hidden md:inline-flex text-sm text-gray-400 hover:text-white transition-colors px-3 py-2">Скачать App</a>
+          <a href="#" class="hidden sm:inline-flex text-sm text-gray-300 hover:text-white transition-colors px-3 py-2 border border-white/10 rounded-md">Войти</a>
+        <a href="index.html#calculator" class="inline-flex items-center px-4 py-2 rounded-md bg-[var(--accent-color)] hover:brightness-95 text-white text-sm font-semibold transition-colors shadow-lg shadow-[var(--accent-color)]/20">
+            Получить расчёт
+          </a>
+          <button id="menu-btn" class="lg:hidden p-2 text-gray-300 hover:text-white" aria-label="Меню">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Мобильное меню -->
+    <div id="mobile-menu" class="hidden lg:hidden border-t border-white/10 bg-industrial-900">
+      <nav class="px-4 py-4 flex flex-col gap-1 text-sm">
+        <!-- Продукты: раскрывающийся список -->
+        <div>
+          <button type="button" id="mobile-products-toggle" class="flex items-center justify-between w-full py-2.5 text-gray-300 hover:text-white transition-colors" aria-expanded="false" aria-controls="mobile-products-submenu">
+            <span>Продукты</span>
+            <svg id="mobile-products-chevron" class="w-4 h-4 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="mobile-products-submenu" class="hidden pl-3 mt-1 mb-2 ml-2 border-l border-white/10 flex flex-col gap-0.5">
+            <a href="sla.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">Высокоточная печать (SLA)</a>
+            <a href="fdm.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">Инженерная печать (FDM)</a>
+            <a href="modeling.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">3D-моделирование</a>
+            <a href="scanning.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">3D-сканирование</a>
+          </div>
+        </div>
+        <a href="index.html#materials" class="mobile-link py-2.5 text-gray-300 hover:text-white">Материалы</a>
+        <a href="models.html" class="mobile-link py-2.5 text-gray-300 hover:text-white">3D Модели</a>
+        <a href="index.html#gallery" class="mobile-link py-2.5 text-gray-300 hover:text-white">Галерея</a>
+        <a href="index.html#calculator" class="mobile-link py-2.5 text-[var(--accent-color)] font-semibold">Получить расчёт</a>
+      </nav>
+    </div>
+  </header>
+  <!-- СЕКЦИЯ: HEADER — КОНЕЦ -->
+
+	<main>
+	  <section class="py-20 bg-[var(--main-bg)] min-h-screen">
+		<div class="container mx-auto px-4">
+		  <h1 class="text-4xl font-bold text-center mb-12">Каталог 3D моделей</h1>
+		  
+		  <div class="max-w-2xl mx-auto mb-12">
+			<div class="relative">
+			  <input type="text" placeholder="Поиск 3D моделей..." class="w-full py-4 pl-6 pr-12 rounded-full border border-gray-200 shadow-lg">
+			</div>
+		  </div>
+
+		  <!-- Рекламный блок под поиском -->
+		  <div class="ad-slot-horizontal">
+			<!-- Место для рекламного баннера -->
+		  </div>
+
+		  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+			<!-- Ряд 1 -->
+			<a href="model-detail.html" class="model-card-link">
+				<div class="group bg-[var(--card-bg)] rounded-2xl overflow-hidden hover:shadow-xl transition-all h-full flex flex-col">
+				   <div class="h-48 bg-gray-200 overflow-hidden">
+					 <img src="jpg/model1.jpg" alt="Модель" class="w-full h-full object-cover">
+				   </div>
+				   <div class="p-4 flex-grow flex flex-col">
+					 <h3 class="font-bold">Название модели</h3>
+					 <button class="bg-gray-900 text-white w-full py-2 mt-auto rounded-lg hover:bg-[var(--accent-color)] transition-colors">Купить</button>
+				   </div>
+				</div>
+			</a>
+			<a href="model-detail.html" class="model-card-link">
+				<div class="group bg-[var(--card-bg)] rounded-2xl overflow-hidden hover:shadow-xl transition-all h-full flex flex-col">
+				   <div class="h-48 bg-gray-200 overflow-hidden">
+					 <img src="jpg/model1.jpg" alt="Модель" class="w-full h-full object-cover">
+				   </div>
+				   <div class="p-4 flex-grow flex flex-col">
+					 <h3 class="font-bold">Название модели</h3>
+					 <button class="bg-gray-900 text-white w-full py-2 mt-auto rounded-lg hover:bg-[var(--accent-color)] transition-colors">Купить</button>
+				   </div>
+				</div>
+			</a>
+			<a href="model-detail.html" class="model-card-link">
+				<div class="group bg-[var(--card-bg)] rounded-2xl overflow-hidden hover:shadow-xl transition-all h-full flex flex-col">
+				   <div class="h-48 bg-gray-200 overflow-hidden">
+					 <img src="jpg/model1.jpg" alt="Модель" class="w-full h-full object-cover">
+				   </div>
+				   <div class="p-4 flex-grow flex flex-col">
+					 <h3 class="font-bold">Название модели</h3>
+					 <button class="bg-gray-900 text-white w-full py-2 mt-auto rounded-lg hover:bg-[var(--accent-color)] transition-colors">Купить</button>
+				   </div>
+				</div>
+			</a>
+			<a href="model-detail.html" class="model-card-link">
+				<div class="group bg-[var(--card-bg)] rounded-2xl overflow-hidden hover:shadow-xl transition-all h-full flex flex-col">
+				   <div class="h-48 bg-gray-200 overflow-hidden">
+					 <img src="jpg/model1.jpg" alt="Модель" class="w-full h-full object-cover">
+				   </div>
+				   <div class="p-4 flex-grow flex flex-col">
+					 <h3 class="font-bold">Название модели</h3>
+					 <button class="bg-gray-900 text-white w-full py-2 mt-auto rounded-lg hover:bg-[var(--accent-color)] transition-colors">Купить</button>
+				   </div>
+				</div>
+			</a>
+
+			<!-- Ряд 2 -->
+			<a href="model-detail.html" class="model-card-link">
+				<div class="group bg-[var(--card-bg)] rounded-2xl overflow-hidden hover:shadow-xl transition-all h-full flex flex-col">
+				   <div class="h-48 bg-gray-200 overflow-hidden">
+					 <img src="jpg/model1.jpg" alt="Модель" class="w-full h-full object-cover">
+				   </div>
+				   <div class="p-4 flex-grow flex flex-col">
+					 <h3 class="font-bold">Название модели</h3>
+					 <button class="bg-gray-900 text-white w-full py-2 mt-auto rounded-lg hover:bg-[var(--accent-color)] transition-colors">Купить</button>
+				   </div>
+				</div>
+			</a>
+			<a href="model-detail.html" class="model-card-link">
+				<div class="group bg-[var(--card-bg)] rounded-2xl overflow-hidden hover:shadow-xl transition-all h-full flex flex-col">
+				   <div class="h-48 bg-gray-200 overflow-hidden">
+					 <img src="jpg/model1.jpg" alt="Модель" class="w-full h-full object-cover">
+				   </div>
+				   <div class="p-4 flex-grow flex flex-col">
+					 <h3 class="font-bold">Название модели</h3>
+					 <button class="bg-gray-900 text-white w-full py-2 mt-auto rounded-lg hover:bg-[var(--accent-color)] transition-colors">Купить</button>
+				   </div>
+				</div>
+			</a>
+			<a href="model-detail.html" class="model-card-link">
+				<div class="group bg-[var(--card-bg)] rounded-2xl overflow-hidden hover:shadow-xl transition-all h-full flex flex-col">
+				   <div class="h-48 bg-gray-200 overflow-hidden">
+					 <img src="jpg/model1.jpg" alt="Модель" class="w-full h-full object-cover">
+				   </div>
+				   <div class="p-4 flex-grow flex flex-col">
+					 <h3 class="font-bold">Название модели</h3>
+					 <button class="bg-gray-900 text-white w-full py-2 mt-auto rounded-lg hover:bg-[var(--accent-color)] transition-colors">Купить</button>
+				   </div>
+				</div>
+			</a>
+			<a href="model-detail.html" class="model-card-link">
+				<div class="group bg-[var(--card-bg)] rounded-2xl overflow-hidden hover:shadow-xl transition-all h-full flex flex-col">
+				   <div class="h-48 bg-gray-200 overflow-hidden">
+					 <img src="jpg/model1.jpg" alt="Модель" class="w-full h-full object-cover">
+				   </div>
+				   <div class="p-4 flex-grow flex flex-col">
+					 <h3 class="font-bold">Название модели</h3>
+					 <button class="bg-gray-900 text-white w-full py-2 mt-auto rounded-lg hover:bg-[var(--accent-color)] transition-colors">Купить</button>
+				   </div>
+				</div>
+			</a>
+			
+			<!-- Рекламный блок в сетке (на всю ширину) -->
+			<div class="col-span-full">
+			  <div class="ad-slot-horizontal" style="margin: 0;">
+				<!-- Место для рекламного баннера -->
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </section>
+	</main>
+
+  <!-- СЕКЦИЯ: FOOTER — НАЧАЛО -->
+  <footer class="bg-industrial-900 text-gray-400 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <!-- Бренд -->
+        <div class="lg:col-span-1">
+        <a href="index.html" class="flex items-center gap-2.5 mb-4">
+            <span class="w-9 h-9 rounded bg-[var(--accent-color)] flex items-center justify-center text-white font-extrabold text-sm">S3</span>
+            <span class="text-white font-bold text-lg">Smol<span class="text-[var(--accent-color)]">3d</span>Lab</span>
+          </a>
+          <p class="text-sm leading-relaxed">Smol 3D Lab  — промышленная 3D-печать и полный цикл производства от прототипа до серии.</p>
+        </div>
+        <!-- Меню: Навигация -->
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Навигация</h4>
+          <ul class="space-y-2.5 text-sm">
+          <li><a href="index.html#products" class="hover:text-white transition-colors">Продукты</a></li>
+          <li><a href="index.html#materials" class="hover:text-white transition-colors">Материалы</a></li>
+          <li><a href="models.html" class="hover:text-white transition-colors">3D Модели</a></li>
+          <li><a href="index.html#gallery" class="hover:text-white transition-colors">Галерея</a></li>
+          </ul>
+        </div>
+        <!-- Меню: Услуги -->
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Услуги</h4>
+          <ul class="space-y-2.5 text-sm">
+          <li><a href="fdm.html" class="hover:text-white transition-colors">FDM-печать</a></li>
+          <li><a href="sla.html" class="hover:text-white transition-colors">SLA-печать</a></li>
+          <li><a href="modeling.html" class="hover:text-white transition-colors">CAD-моделирование</a></li>
+          <li><a href="scanning.html" class="hover:text-white transition-colors">3D-сканирование</a></li>
+          </ul>
+        </div>
+        <!-- Меню: Контакты -->
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Контакты</h4>
+          <ul class="space-y-2.5 text-sm">
+          <li><a href="index.html#calculator" class="hover:text-white transition-colors">Получить расчёт</a></li>
+            <li><span>info@smol3dlab.ru</span></li>
+            <li><span>+7 (900) 123-25-34</span></li>
+            <li><span>г. Шахты, Россия</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+        <p>© 2026 Smol3dLab. Все права защищены.</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-white transition-colors">Политика конфиденциальности</a>
+          <a href="#" class="hover:text-white transition-colors">Условия использования</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- СЕКЦИЯ: FOOTER — КОНЕЦ -->
+
+  <script>
+    // --- Header scroll ---
+    const siteHeader = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+      siteHeader.classList.toggle('header-scrolled', window.scrollY > 40);
+    });
+
+    // --- Mobile menu ---
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileProductsToggle = document.getElementById('mobile-products-toggle');
+    const mobileProductsSubmenu = document.getElementById('mobile-products-submenu');
+    const mobileProductsChevron = document.getElementById('mobile-products-chevron');
+
+    menuBtn.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      if (isOpen) {
+        mobileProductsSubmenu.classList.add('hidden');
+        mobileProductsChevron.classList.remove('rotate-180');
+        mobileProductsToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    mobileProductsToggle.addEventListener('click', () => {
+      const isOpen = !mobileProductsSubmenu.classList.contains('hidden');
+      mobileProductsSubmenu.classList.toggle('hidden', isOpen);
+      mobileProductsChevron.classList.toggle('rotate-180', !isOpen);
+      mobileProductsToggle.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    document.querySelectorAll('.mobile-link').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        mobileProductsSubmenu.classList.add('hidden');
+        mobileProductsChevron.classList.remove('rotate-180');
+        mobileProductsToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // --- Scroll reveal ---
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0, rootMargin: '0px 0px 50px 0px' }
+    );
+    revealEls.forEach(el => revealObserver.observe(el));
+
+    // --- Smooth anchor scroll ---
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', (e) => {
+        const targetId = anchor.getAttribute('href');
+        if (targetId === '#') return;
+        const target = document.querySelector(targetId);
+        if (!target) return;
+        e.preventDefault();
+        const offset = 80;
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      });
+    });
+
+    // --- Form: Web3Forms ---
+    const form = document.getElementById('order-form');
+    const nameInput = document.getElementById('name');
+    const contactInput = document.getElementById('contact');
+    const fileLinkInput = document.getElementById('file-link');
+    const technologySelect = document.getElementById('technology');
+    const materialSelect = document.getElementById('material');
+    const postProcessingSelect = document.getElementById('post-processing');
+    const quantityInput = document.getElementById('quantity');
+    const nameError = document.getElementById('name-error');
+    const contactError = document.getElementById('contact-error');
+    const formSuccess = document.getElementById('form-success');
+    const formError = document.getElementById('form-error');
+    const formErrorText = document.getElementById('form-error-text');
+    const submitBtn = document.getElementById('submit-btn');
+    const SUBMIT_BTN_DEFAULT = 'Отправить на просчёт';
+
+    function validateOrderForm() {
+      let valid = true;
+
+      if (!nameInput.value.trim()) {
+        nameError.classList.remove('hidden');
+        nameInput.classList.add('border-red-400');
+        valid = false;
+      } else {
+        nameError.classList.add('hidden');
+        nameInput.classList.remove('border-red-400');
+      }
+
+      if (!contactInput.value.trim()) {
+        contactError.classList.remove('hidden');
+        contactInput.classList.add('border-red-400');
+        valid = false;
+      } else {
+        contactError.classList.add('hidden');
+        contactInput.classList.remove('border-red-400');
+      }
+
+      return valid;
+    }
+
+    function setSubmitLoading(isLoading) {
+      submitBtn.disabled = isLoading;
+      submitBtn.textContent = isLoading ? 'Отправка...' : SUBMIT_BTN_DEFAULT;
+    }
+
+    function hideFormNotifications() {
+      formSuccess.classList.add('hidden');
+      formError.classList.add('hidden');
+    }
+
+    function showFormSuccess() {
+      formError.classList.add('hidden');
+      formSuccess.classList.remove('hidden');
+      formSuccess.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function showFormError(message) {
+      formSuccess.classList.add('hidden');
+      formErrorText.textContent = message;
+      formError.classList.remove('hidden');
+      formError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    async function sendOrderToEmail(orderData) {
+      if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY === 'твой_ключ') {
+        throw new Error('Укажите WEB3FORMS_ACCESS_KEY в настройках скрипта.');
+      }
+
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: '🚀 Новая заявка на 3D-печать!',
+          name: orderData.name,
+          contact: orderData.contact,
+          file: orderData.fileLink || 'не указана',
+          technology: orderData.technology,
+          material: orderData.material,
+          post_processing: orderData.postProcessing,
+          quantity: orderData.quantity,
+        }),
+      });
+
+      return response;
+    }
+
+    async function handleOrderFormSubmit(event) {
+      event.preventDefault();
+      hideFormNotifications();
+
+      if (!validateOrderForm()) return;
+
+      const orderData = {
+        name: nameInput.value.trim(),
+        contact: contactInput.value.trim(),
+        fileLink: fileLinkInput.value.trim(),
+        technology: technologySelect.value,
+        material: materialSelect.value,
+        postProcessing: postProcessingSelect.value,
+        quantity: quantityInput.value || '1',
+      };
+
+      setSubmitLoading(true);
+
+      try {
+        const response = await sendOrderToEmail(orderData);
+        const data = await response.json().catch(() => ({}));
+
+        if (response.status !== 200) {
+          throw new Error(data.message || `Ошибка сервера: ${response.status}`);
+        }
+
+        if (data.success === false) {
+          throw new Error(data.message || 'Не удалось отправить заявку.');
+        }
+
+        form.reset();
+        quantityInput.value = '1';
+        showFormSuccess();
+      } catch (error) {
+        const message = error.message.includes('Failed to fetch')
+          ? 'Ошибка сети. Проверьте подключение к интернету.'
+          : error.message || 'Попробуйте ещё раз или свяжитесь с нами напрямую.';
+        showFormError(message);
+      } finally {
+        setSubmitLoading(false);
+      }
+    }
+
+    form.onsubmit = handleOrderFormSubmit;
+
+    [nameInput, contactInput].forEach(input => {
+      input.addEventListener('input', () => {
+        const error = input.id === 'name' ? nameError : contactError;
+        error.classList.add('hidden');
+        input.classList.remove('border-red-400');
+      });
+    });
+
+    // --- Web3Forms: вставьте свой Access Key ниже ---
+    const WEB3FORMS_ACCESS_KEY = 'd8bcbf07-e399-47f3-9f44-e29dc6f18f58';
+  </script>
+</body>
+</html>

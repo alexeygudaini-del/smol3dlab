@@ -1,0 +1,48 @@
+{
+  "colors": {
+    "background-main": "#FFFFFF",
+    "surface-shades": {
+      "gray-100": "#f8fafc",
+      "gray-200": "#f1f5f9",
+      "gray-300": "#e2e8f0",
+      "gray-400": "#cbd5e1",
+      "gray-500": "#94a3b8",
+      "gray-600": "#475569",
+      "gray-700": "#334155"
+    },
+    "accent": "#f97316"
+  },
+  "typography": {
+    "font-family": "'Roboto', sans-serif"
+  },
+  "business_logic": {
+    "pricing": {
+      "base_rate_per_gram": {
+        "FDM": 6,
+        "SLA": 12
+      },
+      "material_multiplier": {
+        "PLA": 1.0,
+        "PETG": 1.1,
+        "ABS": 1.1,
+        "Nylon": 1.5,
+        "TPU": 1.3,
+        "Standard Resin": 1.0,
+        "Tough Resin": 1.3
+      },
+      "post_processing_fixed_fee": {
+        "Без обработки": 0,
+        "Шлифовка": 500,
+        "Грунтовка и покраска": 1500,
+        "Полировка": 800,
+        "Склейка / сборка": 1000
+      }
+    }
+  },
+  "ui_settings": {
+    "process_circle_size": "144px",
+    "process_icon_size": "120px",
+    "reviews_speed_fast": "35s",
+    "reviews_speed_normal": "25s"
+  }
+}

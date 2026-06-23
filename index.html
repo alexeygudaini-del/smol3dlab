@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smol3dLab — Промышленная 3D-печать от прототипа до серии</title>
+  <meta name="description" content="Smol3dLab — промышленная 3D-печать FDM и SLA, CAD-моделирование, 3D-сканирование. От прототипа до серийного производства." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#f97316', dark: '#ea580c', light: '#fb923c' },
+            industrial: { 900: '#0f1419', 800: '#1a2332', 700: '#243044', 400: '#4a658e' },
+          }
+        },
+      },
+    };
+  </script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  
+  <style>
+    /* Базовые стили и переменные (позже они будут подтягиваться из config.js) */
+    :root {
+      --accent-color: #f97316;
+      --main-bg: #ffffff;
+    }
+
+    #svg_path_edges {
+        stroke: var(--accent-color);
+        stroke-opacity: 0.3;
+        transition: 0.3s;
+    }
+    .bg-voronoi-light:hover #svg_path_edges {
+        stroke-opacity: 0.8;
+    }
+
+    /* Навигация и эффекты появления */
+    .header-scrolled {
+      background: rgba(15, 20, 25, 0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .reveal {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    
+    /* Dropdown меню */
+    .nav-dropdown {
+      opacity: 0; visibility: hidden;
+      transform: translateX(-50%) translateY(-0.5rem);
+      transform-origin: top;
+      transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+    }
+    .nav-dropdown-group:hover .nav-dropdown,
+    .nav-dropdown-group:focus-within .nav-dropdown {
+      opacity: 1; visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    .nav-dropdown-chevron { transition: transform 0.2s ease; }
+    .nav-dropdown-group:hover .nav-dropdown-chevron { transform: rotate(180deg); }
+
+    /* Анимации Hero */
+    .hero-bg {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: center;
+    }
+    .bg-1 { z-index: 1; }
+    .bg-2 { z-index: 2; opacity: 0; animation: fade-2 12s infinite; }
+    .bg-3 { z-index: 3; opacity: 0; animation: fade-3 12s infinite; }
+    @keyframes fade-2 { 0%, 25% { opacity: 0; } 33%, 58% { opacity: 1; } 66%, 100% { opacity: 0; } }
+    @keyframes fade-3 { 0%, 58% { opacity: 0; } 66%, 91% { opacity: 1; } 100% { opacity: 0; } }
+
+    /* Левитация шагов */
+    @keyframes float-y { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+    .animate-float-1 { animation: float-y 4s ease-in-out infinite; }
+    .animate-float-2 { animation: float-y 5s ease-in-out infinite 1s; }
+    .animate-float-3 { animation: float-y 4.5s ease-in-out infinite 0.5s; }
+    .animate-float-4 { animation: float-y 5.5s ease-in-out infinite 1.5s; }
+    
+    /* Бегущая строка галереи */
+    @keyframes scroll-x { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .animate-scroll-x { animation: scroll-x 35s linear infinite; width: max-content; }
+
+    /* Вертикальные отзывы */
+    @keyframes scroll-y { 0% { transform: translateY(0); } 100% { transform: translateY(-50%); } }
+    .animate-scroll-y-fast { animation: scroll-y 35s linear infinite; }
+    .animate-scroll-y-normal { animation: scroll-y 25s linear infinite; }
+    .mask-vertical { mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent); }
+
+    /* МОБИЛЬНАЯ НАДЁЖНОСТЬ: фон сразу чтобы не было белого экрана */
+    html, body { background-color: #1a1a2e; }
+    
+    /* Если JS завис или медленный — через 0.5с показать всё */
+    @keyframes force-reveal { to { opacity: 1; transform: none; } }
+    /* iOS Safari: фикс 100vh (адресная строка Safari) */
+    @supports (-webkit-touch-callout: none) {
+      .h-screen { height: -webkit-fill-available; }
+      .min-h-screen { min-height: -webkit-fill-available; }
+    }
+    .reveal { animation: force-reveal 0s 0.8s forwards; }
+    
+    /* Элементы hero показываем сразу — они всегда на экране */
+    .hero-reveal { opacity: 1 !important; transform: none !important; }
+
+    /* ИСПРАВЛЕНИЕ: Слой фона */
+    .bg-layer {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1; pointer-events: none;
+      background-color: var(--main-bg);
+      background-image: url('voronoi.svg'); 
+      background-size: 1920px 1920px;
+      background-repeat: repeat;
+    }
+  </style>
+  
+<style>
+/* Возвращаем верстку в нормальное состояние, просто принудительно включаем видимость */
+html, body, header, main, section, div, span, p, a, img {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+</style>
+  <script src="config.js"></script>
+</head>
+
+<body class="antialiased text-gray-900" style="font-family: var(--font-family-sans);">
+
+  <div class="bg-layer"></div>
+
+  <header id="site-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-industrial-900/80 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-[72px]">
+        <a href="#" class="flex items-center gap-2.5 group">
+          <span class="w-9 h-9 rounded bg-[var(--accent-color)] flex items-center justify-center text-white font-extrabold text-sm tracking-tighter">S3</span>
+          <span class="text-white font-bold text-lg tracking-tight">Smol<span class="text-[var(--accent-color)]">3d</span>Lab</span>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-300">
+          <div class="nav-dropdown-group relative">
+            <button type="button" class="flex items-center gap-1.5 hover:text-white transition-colors py-2" id="products-nav-trigger">
+              Продукты
+              <svg class="nav-dropdown-chevron w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="nav-dropdown absolute left-1/2 top-full pt-3 z-50 origin-top">
+              <div class="w-64 bg-white backdrop-blur-md rounded-xl shadow-xl border border-gray-100 py-2 overflow-hidden">
+                <p class="px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400">Направления</p>
+                <a href="sla.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-violet-50 text-violet-600 text-[10px] font-bold flex items-center justify-center shrink-0">SLA</span>
+                  <span class="text-sm font-medium">Высокоточная печать (SLA)</span>
+                </a>
+                <a href="fdm.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-orange-50 text-[var(--accent-color)] text-[10px] font-bold flex items-center justify-center shrink-0">FDM</span>
+                  <span class="text-sm font-medium">Инженерная печать (FDM)</span>
+                </a>
+                <a href="modeling.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-blue-50 text-blue-600 text-[10px] font-bold flex items-center justify-center shrink-0">CAD</span>
+                  <span class="text-sm font-medium">3D-моделирование</span>
+                </a>
+                <a href="scanning.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold flex items-center justify-center shrink-0">3D</span>
+                  <span class="text-sm font-medium">3D-сканирование</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <a href="#materials" class="hover:text-white transition-colors">Материалы</a>
+          <a href="models.html" class="hover:text-white transition-colors">3D Модели</a>
+          <a href="#gallery" class="hover:text-white transition-colors">Галерея</a>
+        </nav>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <a href="#" class="hidden md:inline-flex text-sm text-gray-400 hover:text-white transition-colors px-3 py-2">Скачать App</a>
+          <a href="#" class="hidden sm:inline-flex text-sm text-gray-300 hover:text-white transition-colors px-3 py-2 border border-white/10 rounded-md">Войти</a>
+          <a href="order.html" class="inline-flex items-center px-4 py-2 rounded-md bg-[var(--accent-color)] hover:brightness-95 text-white text-sm font-semibold transition-colors shadow-lg shadow-[var(--accent-color)]/20">
+            Получить расчёт
+          </a>
+          <button id="menu-btn" class="lg:hidden p-2 text-gray-300 hover:text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  <div id="mobile-menu" class="hidden lg:hidden bg-industrial-900 border-t border-white/10 px-4 py-4 space-y-1">
+    <p class="text-[10px] font-semibold uppercase tracking-widest text-gray-500 px-2 pt-1 pb-2">Направления</p>
+    <a href="sla.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+      <span class="w-7 h-7 rounded bg-violet-900/50 text-violet-400 text-[10px] font-bold flex items-center justify-center shrink-0">SLA</span>
+      Высокоточная печать (SLA)
+    </a>
+    <a href="fdm.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+      <span class="w-7 h-7 rounded bg-orange-900/50 text-orange-400 text-[10px] font-bold flex items-center justify-center shrink-0">FDM</span>
+      Инженерная печать (FDM)
+    </a>
+    <a href="modeling.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+      <span class="w-7 h-7 rounded bg-blue-900/50 text-blue-400 text-[10px] font-bold flex items-center justify-center shrink-0">CAD</span>
+      3D-моделирование
+    </a>
+    <a href="scanning.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors">
+      <span class="w-7 h-7 rounded bg-emerald-900/50 text-emerald-400 text-[10px] font-bold flex items-center justify-center shrink-0">3D</span>
+      3D-сканирование
+    </a>
+    <div class="border-t border-white/10 my-2"></div>
+    <a href="#materials" class="flex items-center gap-3 px-3 py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors" id="mob-materials-link">Материалы</a>
+    <a href="models.html" class="flex items-center gap-3 px-3 py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors">3D Модели</a>
+    <a href="#gallery" class="flex items-center gap-3 px-3 py-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors" id="mob-gallery-link">Галерея</a>
+    <div class="border-t border-white/10 my-2"></div>
+    <a href="order.html" class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[var(--accent-color)] text-white text-sm font-bold transition-colors">
+      Получить расчёт
+    </a>
+  </div>
+  </header>
+
+  <main>
+    <section class="relative overflow-hidden flex flex-col items-center justify-center min-h-[700px] py-20">
+      <div class="absolute inset-0 z-0 bg-gray-900">
+          <img src="jpg/1.jpg" class="hero-bg bg-1" alt="Фон 1">
+          <img src="jpg/2.jpg" class="hero-bg bg-2" loading="lazy" alt="Фон 2">
+          <img src="jpg/3.jpg" class="hero-bg bg-3" loading="lazy" alt="Фон 3">
+      </div>
+      <div class="absolute inset-0 z-10 bg-gradient-to-b from-gray-900/90 via-gray-900/50 to-gray-900/70"></div>
+      <div class="relative z-20 container mx-auto px-4 text-center">
+        <div class="inline-block border border-gray-500 rounded-full px-4 py-1 mb-6">
+          <span class="text-xs font-bold tracking-widest text-[var(--accent-color)] uppercase">Промышленное производство • FDM • SLA</span>
+        </div>
+        <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 tracking-tight leading-tight">
+          Промышленная 3D-печать<br>
+          <span class="text-[var(--accent-color)]">от прототипа до серии</span>
+        </h1>
+        <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-12">
+          Высокоточная печать, инженерные материалы и полный цикл производства для вашего бизнеса.
+        </p>
+        <a href="order.html" class="inline-flex items-center gap-2 bg-[var(--accent-color)] text-white font-bold px-8 py-4 rounded-lg shadow-lg shadow-[var(--accent-color)]/30 hover:brightness-95 hover:-translate-y-1 transition-all mb-20 reveal">
+          Оформить заказ
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-white">
+          <div><div class="text-3xl md:text-4xl font-extrabold mb-1">500+</div><div class="text-xs text-gray-400 font-bold tracking-wider uppercase">Проектов</div></div>
+          <div><div class="text-3xl md:text-4xl font-extrabold mb-1">12</div><div class="text-xs text-gray-400 font-bold tracking-wider uppercase">Материалов</div></div>
+          <div><div class="text-3xl md:text-4xl font-extrabold mb-1">48ч</div><div class="text-xs text-gray-400 font-bold tracking-wider uppercase">Срок печати</div></div>
+          <div><div class="text-3xl md:text-4xl font-extrabold mb-1">±0.1</div><div class="text-xs text-gray-400 font-bold tracking-wider uppercase">Мм точность</div></div>
+        </div>
+      </div>
+    </section>
+
+    <div id="products"></div>
+    <section id="process" class="py-20 relative overflow-hidden">
+      <div class="container mx-auto px-6 relative reveal">
+        <div class="text-center mb-16">
+          <span class="text-[var(--accent-color)] font-bold uppercase tracking-wider text-sm">Процесс</span>
+          <h2 class="text-3xl md:text-4xl font-bold mt-2">Как мы работаем</h2>
+          <p class="text-gray-500 mt-4">Четыре простых шага от цифровой модели до готовой детали</p>
+        </div>
+        <div class="hidden md:flex justify-center gap-8 lg:gap-16 items-center relative pt-12 pb-24 max-w-5xl mx-auto">
+          
+          <svg class="absolute top-1/2 left-0 w-full h-32 -translate-y-1/2 text-gray-300 z-0" preserveAspectRatio="none" viewBox="0 0 1000 100" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 6">
+            <path d="M50,50 C200,-50 300,150 500,50 C700,-50 800,150 950,50" />
+          </svg>
+
+          <div class="relative z-10 w-1/4 flex flex-col items-center text-center -mt-24 animate-float-1">
+            <div class="w-[var(--circle-size)] h-[var(--circle-size)] bg-white rounded-full border-4 border-[var(--accent-color)] flex items-center justify-center text-[var(--accent-color)] mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
+              <svg class="w-[var(--icon-size)] h-[var(--icon-size)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Загрузка файла</h3>
+          </div>
+
+          <div class="relative z-10 w-1/4 flex flex-col items-center text-center mt-24 animate-float-2">
+            <div class="w-[var(--circle-size)] h-[var(--circle-size)] bg-white rounded-full border-4 border-grey-500 flex items-center justify-center text-gray-500/70 mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
+              <svg class="w-[var(--icon-size)] h-[var(--icon-size)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Утверждение</h3>
+          </div>
+
+          <div class="relative z-10 w-1/4 flex flex-col items-center text-center -mt-24 animate-float-3">
+            <div class="w-[var(--circle-size)] h-[var(--circle-size)] bg-white rounded-full border-4 border-[var(--accent-color)] flex items-center justify-center text-[var(--accent-color)] mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
+              <svg class="w-[var(--icon-size)] h-[var(--icon-size)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Печать</h3>
+          </div>
+
+          <div class="relative z-10 w-1/4 flex flex-col items-center text-center mt-24 animate-float-4">
+            <div class="w-[var(--circle-size)] h-[var(--circle-size)] bg-white rounded-full border-4 border-grey-500 flex items-center justify-center text-gray-500/70 mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
+              <svg class="w-[var(--icon-size)] h-[var(--icon-size)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+            </div>
+            <h3 class="font-bold text-lg mb-2">Отправка</h3>
+          </div>
+          
+        </div>
+        </div>
+    </section>
+
+    <div id="materials"></div>
+    <section id="services" class="py-20 bg-gray-300/75 border-t border-gray-100">
+      <div class="container mx-auto px-4 max-w-7xl reveal"> 
+        <div class="text-center mb-16">
+          <span class="text-[var(--accent-color)] font-bold uppercase tracking-wider text-sm">Услуги</span>
+          <h2 class="text-3xl md:text-4xl font-bold mt-2">Наши услуги</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group">
+            <img src="jpg/4.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gray-900/80 z-10"></div>
+            <div class="relative z-20 flex flex-col h-full">
+              <div class="w-24 h-24 bg-orange-50 text-[var(--accent-color)] rounded-lg flex items-center justify-center font-bold text-sm mb-6">FDM</div>
+              <h3 class="text-xl font-bold text-white mb-3">Инженерная FDM-печать</h3>
+              <p class="text-gray-300 text-sm flex-grow mb-6">Функциональные прототипы и серийные детали из ABS, PETG, Nylon и композитов.</p>
+              <a href="fdm.html" class="text-[var(--accent-color)] text-sm font-bold hover:text-white transition-colors flex items-center gap-1">Заказать <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
+            </div>
+          </div>
+          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group">
+            <img src="jpg/5.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gray-900/80 z-10"></div>
+            <div class="relative z-20 flex flex-col h-full">
+              <div class="w-12 h-12 bg-violet-50 text-violet-600 rounded-lg flex items-center justify-center font-bold text-sm mb-6">SLA</div>
+              <h3 class="text-xl font-bold text-white mb-3">Высокоточная SLA-печать</h3>
+              <p class="text-gray-300 text-sm flex-grow mb-6">Микронная точность, гладкая поверхность. Фотополимеры для прецизионных деталей.</p>
+              <a href="sla.html" class="text-[var(--accent-color)] text-sm font-bold hover:text-white transition-colors flex items-center gap-1">Заказать <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
+            </div>
+          </div>
+          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group">
+            <img src="jpg/6.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gray-900/80 z-10"></div>
+            <div class="relative z-20 flex flex-col h-full">
+              <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center font-bold text-sm mb-6">CAD</div>
+              <h3 class="text-xl font-bold text-white mb-3">CAD-моделирование</h3>
+              <p class="text-gray-300 text-sm flex-grow mb-6">Параметрическое проектирование, реверс-инжиниринг и подготовка моделей к печати.</p>
+              <a href="modeling.html" class="text-[var(--accent-color)] text-sm font-bold hover:text-white transition-colors flex items-center gap-1">Заказать <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
+            </div>
+          </div>
+          <div class="relative overflow-hidden p-8 rounded-2xl flex flex-col h-full group">
+            <img src="jpg/7.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute inset-0 bg-gray-900/80 z-10"></div>
+            <div class="relative z-20 flex flex-col h-full">
+              <div class="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-lg flex items-center justify-center font-bold text-sm mb-6">3D</div>
+              <h3 class="text-xl font-bold text-white mb-3">3D-сканирование</h3>
+              <p class="text-gray-300 text-sm flex-grow mb-6">Оцифровка физических объектов для реверс-инжиниринга и контроля геометрии.</p>
+              <a href="scanning.html" class="text-[var(--accent-color)] text-sm font-bold hover:text-white transition-colors flex items-center gap-1">Заказать <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<section id="gallery" class="py-24 relative overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4 lg:px-8 relative z-10">
+        <div class="text-center mb-16 reveal">
+          <span class="text-[var(--accent-color)] font-bold uppercase tracking-wider text-sm">Опыт клиентов</span>
+          <h2 class="text-3xl md:text-4xl font-bold mt-2">Что о нас говорят</h2>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          
+          <div id="portfolio-slider" class="w-full h-[500px] bg-industrial-900 rounded-3xl overflow-hidden relative shadow-2xl reveal group mb-12 lg:mb-0">
+            
+            <div class="slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100">
+              <img src="jpg/gallery/1.jpg" loading="lazy" alt="Корпус устройства" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-industrial-900/95 via-industrial-900/30 to-transparent"></div>
+              <div class="absolute bottom-8 left-8 right-8">
+                <span class="inline-block px-3 py-1 bg-[var(--accent-color)] text-white text-[10px] font-bold uppercase tracking-wider rounded mb-3 shadow-lg">FDM • PETG</span>
+                <h3 class="text-2xl font-bold text-white mb-2">Корпус промышленного устройства</h3>
+                <p class="text-gray-300 text-sm">Высокая прочность слоев и точная геометрия под сборку.</p>
+              </div>
+            </div>
+
+            <div class="slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0">
+              <img src="jpg/gallery/2.jpg" loading="lazy" alt="Сложный механизм" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-industrial-900/95 via-industrial-900/30 to-transparent"></div>
+              <div class="absolute bottom-8 left-8 right-8">
+                <span class="inline-block px-3 py-1 bg-violet-600 text-white text-[10px] font-bold uppercase tracking-wider rounded mb-3 shadow-lg">SLA • Tough Resin</span>
+                <h3 class="text-2xl font-bold text-white mb-2">Сложный механизм с шестернями</h3>
+                <p class="text-gray-300 text-sm">Микронная точность и гладкая поверхность без слоистости.</p>
+              </div>
+            </div>
+
+            <div class="slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0">
+              <img src="jpg/gallery/3.jpg" loading="lazy" alt="Мастер-модель" class="w-full h-full object-cover">
+              <div class="absolute inset-0 bg-gradient-to-t from-industrial-900/95 via-industrial-900/30 to-transparent"></div>
+              <div class="absolute bottom-8 left-8 right-8">
+                <span class="inline-block px-3 py-1 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider rounded mb-3 shadow-lg">CAD + SLA</span>
+                <h3 class="text-2xl font-bold text-white mb-2">Мастер-модель под литье</h3>
+                <p class="text-gray-300 text-sm">От реверс-инжиниринга до финальной печати выжигаемым полимером.</p>
+              </div>
+            </div>
+
+            <div class="absolute bottom-8 right-8 flex gap-2 z-20">
+              <div class="dot w-2 h-2 rounded-full bg-[var(--accent-color)] transition-all duration-300"></div>
+              <div class="dot w-2 h-2 rounded-full bg-white/30 transition-all duration-300"></div>
+              <div class="dot w-2 h-2 rounded-full bg-white/30 transition-all duration-300"></div>
+            </div>
+          </div>
+
+<div class="h-[500px] mask-vertical overflow-hidden relative group grid grid-cols-1 md:grid-cols-2 gap-6 reveal">
+            
+            <div class="review-container flex flex-col animate-scroll-y-fast w-full group-hover:[animation-play-state:paused]">
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <div><h4 class="font-bold text-sm">Леон</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
+                </div>
+                <p class="text-gray-600 text-sm">Детализация барельефа на SLA просто супер. Отличная работа.</p>
+              </div>
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <div><h4 class="font-bold text-sm">Дмитрий Романов</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
+                </div>
+                <p class="text-gray-600 text-sm">Заказывал партию голов для марионеток, прочность пластика на высоте.</p>
+              </div>
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <div><h4 class="font-bold text-sm">Анна Смирнова</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
+                </div>
+                <p class="text-gray-600 text-sm">Быстрая печать FDM. Геометрия не поплыла, усадки почти нет.</p>
+              </div>
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <div><h4 class="font-bold text-sm">Игорь В.</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
+                </div>
+                <p class="text-gray-600 text-sm">Заказывал печать сложной архитектурной формы. SLA справился на ура.</p>
+              </div>
+            </div>
+
+            <div class="review-container hidden md:flex flex-col animate-scroll-y-normal w-full group-hover:[animation-play-state:paused]">
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <div><h4 class="font-bold text-sm">Максим Сергеевич</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
+                </div>
+                <p class="text-gray-600 text-sm">Сделали быстро, слои спеклись намертво. Инженерный узел из PETG.</p>
+              </div>
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <div><h4 class="font-bold text-sm">Виктория</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
+                </div>
+                <p class="text-gray-600 text-sm">Спасибо за помощь с 3D-моделированием! Очень подробно проконсультировали.</p>
+              </div>
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <div><h4 class="font-bold text-sm">Александр</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
+                </div>
+                <p class="text-gray-600 text-sm">Печатали партию корпусов. Подобрали правильный пластик под нагрузки.</p>
+              </div>
+              <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center gap-3 mb-4">
+                  <div class="w-10 h-10 rounded-full bg-gray-200"></div>
+                  <div><h4 class="font-bold text-sm">Евгений М.</h4><div class="text-yellow-400 text-xs">★★★★★</div></div>
+                </div>
+                <p class="text-gray-600 text-sm">Переходники для вентиляции встали как родные. Размеры совпали до десятых.</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-24 bg-industrial-900 relative overflow-hidden">
+      <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[var(--accent-color)] opacity-5 rounded-full blur-3xl z-0 pointer-events-none"></div>
+      
+      <div class="max-w-4xl mx-auto px-4 text-center relative z-10 reveal">
+        <h2 class="text-4xl md:text-5xl font-extrabold text-white mb-6">Готовы воплотить проект в пластике?</h2>
+        <p class="text-gray-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto">Перейдите в конфигуратор, чтобы выбрать материал, указать параметры печати и получить моментальный расчет стоимости.</p>
+        
+        <a href="order.html" class="inline-flex items-center justify-center gap-3 bg-[var(--accent-color)] text-white font-bold px-10 py-5 rounded-xl shadow-2xl shadow-[var(--accent-color)]/20 hover:brightness-95 hover:-translate-y-1 transition-all text-lg border border-white/10">
+          Рассчитать стоимость
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-industrial-900 text-gray-400 py-16 border-t border-white/5 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div class="lg:col-span-1">
+          <a href="#" class="flex items-center gap-2.5 mb-4">
+            <span class="w-9 h-9 rounded bg-[var(--accent-color)] flex items-center justify-center text-white font-extrabold text-sm">S3</span>
+            <span class="text-white font-bold text-lg">Smol<span class="text-[var(--accent-color)]">3d</span>Lab</span>
+          </a>
+          <p class="text-sm leading-relaxed">Smol 3D Lab — промышленная 3D-печать и полный цикл производства от прототипа до серии.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Навигация</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="#products" class="hover:text-white transition-colors">Продукты</a></li>
+            <li><a href="#materials" class="hover:text-white transition-colors">Материалы</a></li>
+            <li><a href="#services" class="hover:text-white transition-colors">Услуги</a></li>
+            <li><a href="#gallery" class="hover:text-white transition-colors">Галерея</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Услуги</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="fdm.html" class="hover:text-white transition-colors">FDM-печать</a></li>
+            <li><a href="sla.html" class="hover:text-white transition-colors">SLA-печать</a></li>
+            <li><a href="modeling.html" class="hover:text-white transition-colors">CAD-моделирование</a></li>
+            <li><a href="scanning.html" class="hover:text-white transition-colors">3D-сканирование</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Контакты</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="order.html" class="hover:text-white transition-colors font-bold text-[var(--accent-color)]">Получить расчёт</a></li>
+            <li><span>info@smol3dlab.ru</span></li>
+            <li><span>+7 (900) 123-25-34</span></li>
+            <li><span>г. Шахты, Россия</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+        <p>© 2026 Smol3dLab. Все права защищены.</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-white transition-colors">Политика конфиденциальности</a>
+          <a href="#" class="hover:text-white transition-colors">Условия использования</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Скрипты для шапки и анимаций (без тяжелой логики формы)
+    const siteHeader = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+      siteHeader.classList.toggle('header-scrolled', window.scrollY > 40);
+    });
+
+
+    // Мобильное меню
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      // Анимируем иконку бургера
+      const icon = menuBtn.querySelector('svg path');
+      if (!mobileMenu.classList.contains('hidden')) {
+        icon.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+      } else {
+        icon.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+      }
+    });
+    // Закрываем меню при клике на якорные ссылки в мобильном меню
+    const mobileLinks = mobileMenu.querySelectorAll('a[href^="#"]');
+    mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.add('hidden');
+        });
+    });
+
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0, rootMargin: '0px 0px 50px 0px' }
+    );
+    revealEls.forEach(el => revealObserver.observe(el));
+    
+    // Немедленно показываем элементы уже видимые при загрузке (для мобильных)
+    setTimeout(() => {
+      revealEls.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          el.classList.add('visible');
+        }
+      });
+    }, 100);
+  </script>
+
+  <script>
+    // Логика слайдера портфолио
+    document.addEventListener('DOMContentLoaded', () => {
+      const slides = document.querySelectorAll('#portfolio-slider .slide');
+      const dots = document.querySelectorAll('#portfolio-slider .dot');
+      if (slides.length === 0) return;
+
+      let currentSlide = 0;
+
+      setInterval(() => {
+        // Прячем текущий слайд и гасим точку
+        slides[currentSlide].classList.remove('opacity-100');
+        slides[currentSlide].classList.add('opacity-0');
+        dots[currentSlide].classList.replace('bg-[var(--accent-color)]', 'bg-white/30');
+
+        // Переходим к следующему
+        currentSlide = (currentSlide + 1) % slides.length;
+
+        // Показываем новый слайд и зажигаем точку
+        slides[currentSlide].classList.remove('opacity-0');
+        slides[currentSlide].classList.add('opacity-100');
+        dots[currentSlide].classList.replace('bg-white/30', 'bg-[var(--accent-color)]');
+      }, 4000); // 4000 мс = 4 секунды на каждый слайд
+    });
+
+      // Автоматическая бесконечная циркуляция отзывов
+    document.querySelectorAll('.review-container').forEach(lane => {
+      lane.innerHTML += lane.innerHTML;
+    });
+
+  </script>
+</body>
+</html>

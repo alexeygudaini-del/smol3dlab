@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Детали модели | Smol3dLab</title>
+  <meta name="description" content="Подробная информация о 3D-модели, скачивание и покупка." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#f97316', dark: '#ea580c', light: '#fb923c' },
+            industrial: { 900: '#0f1419', 800: '#1a2332', 700: '#243044', 400: '#4a658e' },
+          },
+          fontFamily: {
+            sans: ['"Inter"', '"Segoe UI"', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  
+  <style>
+    html, body { background-color: #1a1a2e; }
+    body {
+      background-color: var(--main-bg, #ffffff);
+      color: var(--text-color, #111827);
+    }
+    .header-scrolled {
+      background: rgba(15, 20, 25, 0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+    }
+    /* Dropdown: Продукты */
+    .nav-dropdown {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-50%) translateY(-0.5rem);
+      transform-origin: top;
+      transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+    }
+    .nav-dropdown-group:hover .nav-dropdown,
+    .nav-dropdown-group:focus-within .nav-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    .nav-dropdown-chevron { transition: transform 0.2s ease; }
+    .nav-dropdown-group:hover .nav-dropdown-chevron,
+    .nav-dropdown-group:focus-within .nav-dropdown-chevron { transform: rotate(180deg); }
+
+    /* --- РЕКЛАМНЫЙ БЛОК --- */
+    .ad-slot-horizontal {
+      width: 100%;
+      min-height: 90px;
+      background-color: #f3f4f6;
+      border: 2px dashed #d1d5db;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem;
+      overflow: hidden;
+    }
+  
+    /* iOS Safari: фикс 100vh (адресная строка Safari) */
+    @supports (-webkit-touch-callout: none) {
+      .h-screen { height: -webkit-fill-available; }
+      .min-h-screen { min-height: -webkit-fill-available; }
+    }
+    </style>
+  <script src="config.js"></script>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- СЕКЦИЯ: HEADER — НАЧАЛО -->
+  <header id="site-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-industrial-900/80 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-[72px]">
+        <!-- Логотип -->
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <span class="w-9 h-9 rounded bg-[var(--accent-color)] flex items-center justify-center text-white font-extrabold text-sm tracking-tighter">S3</span>
+          <span class="text-white font-bold text-lg tracking-tight">Smol<span class="text-[var(--accent-color)]">3d</span>Lab</span>
+        </a>
+
+        <!-- Навигация -->
+        <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-300">
+          <div class="nav-dropdown-group relative">
+            <button type="button" class="flex items-center gap-1.5 hover:text-white transition-colors py-2" aria-expanded="false" aria-haspopup="true" id="products-nav-trigger">
+              Продукты
+              <svg class="nav-dropdown-chevron w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="nav-dropdown absolute left-1/2 top-full pt-3 z-50 origin-top">
+              <div class="w-64 bg-[var(--main-bg)]/95 backdrop-blur-md rounded-xl shadow-lg border border-gray-200 py-2 overflow-hidden">
+                <p class="px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-gray-500">Направления</p>
+                <a href="sla.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-violet-50 text-violet-600 text-[10px] font-bold flex items-center justify-center shrink-0">SLA</span>
+                  <span class="text-sm font-medium">Высокоточная печать (SLA)</span>
+                </a>
+                <a href="fdm.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-orange-50 text-[var(--accent-color)] text-[10px] font-bold flex items-center justify-center shrink-0">FDM</span>
+                  <span class="text-sm font-medium">Инженерная печать (FDM)</span>
+                </a>
+                <a href="modeling.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-blue-50 text-blue-600 text-[10px] font-bold flex items-center justify-center shrink-0">CAD</span>
+                  <span class="text-sm font-medium">3D-моделирование</span>
+                </a>
+                <a href="scanning.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold flex items-center justify-center shrink-0">3D</span>
+                  <span class="text-sm font-medium">3D-сканирование</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <a href="index.html#materials" class="hover:text-white transition-colors">Материалы</a>
+          <a href="models.html" class="text-white font-semibold transition-colors">3D Модели</a>
+          <a href="index.html#gallery" class="hover:text-white transition-colors">Галерея</a>
+        </nav>
+
+        <!-- Действия -->
+        <div class="flex items-center gap-2 sm:gap-3">
+          <a href="index.html#calculator" class="inline-flex items-center px-4 py-2 rounded-md bg-[var(--accent-color)] hover:brightness-95 text-white text-sm font-semibold transition-colors shadow-lg shadow-[var(--accent-color)]/20">
+            Получить расчёт
+          </a>
+          <button id="menu-btn" class="lg:hidden p-2 text-gray-300 hover:text-white" aria-label="Меню">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Мобильное меню -->
+    <div id="mobile-menu" class="hidden lg:hidden border-t border-white/10 bg-industrial-900">
+      <nav class="px-4 py-4 flex flex-col gap-1 text-sm">
+        <div>
+          <button type="button" id="mobile-products-toggle" class="flex items-center justify-between w-full py-2.5 text-gray-300 hover:text-white transition-colors" aria-expanded="false" aria-controls="mobile-products-submenu">
+            <span>Продукты</span>
+            <svg id="mobile-products-chevron" class="w-4 h-4 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="mobile-products-submenu" class="hidden pl-3 mt-1 mb-2 ml-2 border-l border-white/10 flex flex-col gap-0.5">
+            <a href="sla.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">Высокоточная печать (SLA)</a>
+            <a href="fdm.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">Инженерная печать (FDM)</a>
+            <a href="modeling.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">3D-моделирование</a>
+            <a href="scanning.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">3D-сканирование</a>
+          </div>
+        </div>
+        <a href="index.html#materials" class="mobile-link py-2.5 text-gray-300 hover:text-white">Материалы</a>
+        <a href="models.html" class="mobile-link py-2.5 text-white font-semibold">3D Модели</a>
+        <a href="index.html#gallery" class="mobile-link py-2.5 text-gray-300 hover:text-white">Галерея</a>
+      </nav>
+    </div>
+  </header>
+  <!-- СЕКЦИЯ: HEADER — КОНЕЦ -->
+
+  <main class="pt-24 pb-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        
+      <!-- Хлебные крошки -->
+      <nav class="flex text-sm text-gray-500 mb-8" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+          <li class="inline-flex items-center">
+            <a href="index.html" class="inline-flex items-center hover:text-[var(--accent-color)] transition-colors">Главная</a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/></svg>
+              <a href="models.html" class="hover:text-[var(--accent-color)] transition-colors">Каталог 3D моделей</a>
+            </div>
+          </li>
+          <li aria-current="page">
+            <div class="flex items-center">
+              <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/></svg>
+              <span class="text-gray-400">Шестерня редуктора усиленная</span>
+            </div>
+          </li>
+        </ol>
+      </nav>
+
+      <!-- ВЕРХНИЙ БЛОК: Изображения и Информация -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        
+        <!-- Левая колонка: Галерея изображений -->
+        <div class="lg:col-span-7">
+          <!-- Главное фото -->
+          <div class="w-full aspect-square bg-[var(--card-bg)] rounded-2xl overflow-hidden border border-gray-200 shadow-sm relative group cursor-zoom-in flex items-center justify-center" style="max-height: 500px;">
+            <img id="mainImage" src="https://images.unsplash.com/photo-1612815159329-181fc03ebcf7?q=80&w=1200" alt="Превью модели" class="w-full h-full object-contain" style="object-fit: contain;" />
+          </div>
+          
+          <!-- Сетка из 4-х миниатюр -->
+          <div class="grid grid-cols-4 gap-4 mt-6">
+            <div class="aspect-square bg-[var(--card-bg)] rounded-xl overflow-hidden border-2 border-[var(--accent-color)] cursor-pointer thumbnail-img" onclick="changeImage(this)">
+              <img src="https://images.unsplash.com/photo-1612815159329-181fc03ebcf7?q=80&w=300" class="w-full h-full object-cover" alt="Миниатюра 1">
+            </div>
+            <div class="aspect-square bg-[var(--card-bg)] rounded-xl overflow-hidden border border-gray-200 cursor-pointer thumbnail-img hover:border-gray-400" onclick="changeImage(this)">
+              <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?q=80&w=300" class="w-full h-full object-cover" alt="Миниатюра 2">
+            </div>
+            <div class="aspect-square bg-[var(--card-bg)] rounded-xl overflow-hidden border border-gray-200 cursor-pointer thumbnail-img hover:border-gray-400" onclick="changeImage(this)">
+              <img src="https://images.unsplash.com/photo-1631545806609-6d9867f2c5a5?q=80&w=300" class="w-full h-full object-cover" alt="Миниатюра 3">
+            </div>
+            <div class="aspect-square bg-[var(--card-bg)] rounded-xl overflow-hidden border border-gray-200 cursor-pointer thumbnail-img hover:border-gray-400" onclick="changeImage(this)">
+              <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=300" class="w-full h-full object-cover" alt="Миниатюра 4">
+            </div>
+          </div>
+        </div>
+
+        <!-- Правая колонка: Информация и действия -->
+        <div class="lg:col-span-5 flex flex-col">
+          <h1 class="text-3xl sm:text-4xl font-extrabold mb-4">Шестерня редуктора усиленная</h1>
+          
+          <!-- Статистика и автор -->
+          <div class="flex items-center justify-between pb-6 border-b border-gray-200 mb-6">
+            <div class="flex items-center gap-3">
+              <img src="jpg/avatars/1.jpg" alt="Автор" class="w-10 h-10 rounded-full object-cover border border-gray-200">
+              <div>
+                <p class="text-sm font-semibold">Иван Петров</p>
+                <p class="text-xs text-gray-500">PRO Инженер</p>
+              </div>
+            </div>
+            <div class="flex gap-4 text-gray-500 text-sm font-medium">
+              <div class="flex items-center gap-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                1.2k
+              </div>
+              <div class="flex items-center gap-1">
+                <svg class="w-5 h-5 text-red-500" fill="currentColor" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                342
+              </div>
+            </div>
+          </div>
+
+          <!-- Краткое описание -->
+          <p class="text-gray-600 mb-8 leading-relaxed">
+            Усиленная версия шестерни для планетарного редуктора. Разработана специально под печать нейлоном или угленаполненным пластиком. Оптимизирована для минимизации поддержек.
+          </p>
+
+          <div class="ad-slot-horizontal mb-8">
+            <!-- Место для рекламного баннера -->
+          </div>
+
+          <!-- Цена -->
+          <div class="text-4xl font-extrabold mb-8 tracking-tight">450 <span class="text-2xl text-gray-400 font-medium">₽</span></div>
+
+          <!-- Кнопки действий -->
+          <div class="mt-auto space-y-4">
+            <button class="w-full flex justify-center items-center gap-2 bg-[var(--accent-color)] text-white py-4 rounded-xl font-bold text-lg hover:brightness-95 transition-all shadow-lg shadow-[var(--accent-color)]/30">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+              Купить модель
+            </button>
+            <button class="w-full flex justify-center items-center gap-2 border-2 border-[var(--accent-color)] text-[var(--accent-color)] bg-transparent py-4 rounded-xl font-bold text-lg hover:bg-[var(--accent-color)] hover:text-white transition-all">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              Скачать демо (Low-Poly)
+            </button>
+          </div>
+          
+          <div class="ad-slot-horizontal">
+            <!-- Место для рекламного баннера -->
+          </div>
+
+        </div>
+      </div>
+
+      <!-- НИЖНИЙ БЛОК: Вкладки (Tabs) -->
+      <div class="mt-20">
+        <div class="border-b border-gray-200">
+          <nav class="flex space-x-8" aria-label="Tabs">
+            <button onclick="openTab(event, 'tab-description')" class="tab-btn border-[var(--accent-color)] text-[var(--accent-color)] whitespace-nowrap py-4 px-1 border-b-2 font-semibold text-base transition-colors">
+              Описание
+            </button>
+            <button onclick="openTab(event, 'tab-files')" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-base transition-colors">
+              Файлы (2)
+            </button>
+            <button onclick="openTab(event, 'tab-comments')" class="tab-btn border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-base transition-colors">
+              Комментарии (15)
+            </button>
+          </nav>
+        </div>
+
+        <div class="py-8">
+          <!-- Контент: Описание -->
+          <div id="tab-description" class="tab-content block animate-[fadeIn_0.5s_ease-in-out]">
+            <div class="grid lg:grid-cols-3 gap-12">
+              <div class="lg:col-span-2 text-gray-600 space-y-4 leading-relaxed">
+                <p>Данная 3D-модель шестерни разработана для замены стандартных пластиковых шестерней в планетарных редукторах. Мы усилили зубья и изменили внутреннюю структуру для лучшего распределения нагрузок.</p>
+                <p>Рекомендуется печатать модель на 100% заполнении, если она будет использоваться в механизмах с высокой нагрузкой. При печати из нейлона (Nylon) деталь способна выдерживать серьезные перепады температур и механические удары.</p>
+                <h3 class="text-xl font-bold text-[var(--text-color)] mt-8 mb-4">Инструкция по сборке</h3>
+                <ul class="list-disc pl-5 space-y-2">
+                  <li>Убедитесь в отсутствии слоновьей ноги (elephant foot) после печати. При необходимости пройдитесь надфилем.</li>
+                  <li>Отверстие под вал спроектировано с учетом термической усадки ABS/Nylon. Допускается расточка сверлом на 0.2 мм.</li>
+                  <li>Используйте силиконовую смазку перед установкой в редуктор.</li>
+                </ul>
+              </div>
+              
+              <!-- Технические характеристики -->
+              <div class="lg:col-span-1">
+                <div class="bg-[var(--card-bg)] rounded-xl p-6 border border-gray-200 shadow-sm">
+                  <h3 class="font-bold text-lg mb-5 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    Параметры печати
+                  </h3>
+                  <ul class="space-y-3 text-sm">
+                    <li class="flex justify-between items-center py-2 border-b border-gray-200/60">
+                      <span class="text-gray-500">Принтер</span>
+                      <span class="font-semibold text-right">Любой FDM</span>
+                    </li>
+                    <li class="flex justify-between items-center py-2 border-b border-gray-200/60">
+                      <span class="text-gray-500">Слайсер</span>
+                      <span class="font-semibold text-right">Cura / PrusaSlicer</span>
+                    </li>
+                    <li class="flex justify-between items-center py-2 border-b border-gray-200/60">
+                      <span class="text-gray-500">Филамент</span>
+                      <span class="font-semibold text-right text-[var(--accent-color)]">Nylon, PETG, ABS</span>
+                    </li>
+                    <li class="flex justify-between items-center py-2 border-b border-gray-200/60">
+                      <span class="text-gray-500">Толщина слоя</span>
+                      <span class="font-semibold text-right">0.12 - 0.2 мм</span>
+                    </li>
+                    <li class="flex justify-between items-center py-2 border-b border-gray-200/60">
+                      <span class="text-gray-500">Скорость</span>
+                      <span class="font-semibold text-right">40-50 мм/с</span>
+                    </li>
+                    <li class="flex justify-between items-center py-2 pt-2">
+                      <span class="text-gray-500">Заполнение</span>
+                      <span class="font-semibold text-right">60 - 100% (Gyroid)</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              
+              <!-- Рекламный блок под описанием -->
+              <div class="ad-slot-horizontal col-span-full mt-4">
+                <!-- Место для рекламного баннера -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Контент: Файлы -->
+          <div id="tab-files" class="tab-content hidden animate-[fadeIn_0.5s_ease-in-out]">
+            <div class="bg-[var(--card-bg)] rounded-xl border border-gray-200 p-6 flex items-center justify-between hover:border-[var(--accent-color)] transition-colors mb-4">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">STL</div>
+                <div>
+                  <h4 class="font-semibold">Gear_v2_HighRes.stl</h4>
+                  <p class="text-xs text-gray-500 mt-0.5">14.2 MB • Обновлено 2 дня назад</p>
+                </div>
+              </div>
+              <button class="text-[var(--accent-color)] p-2 hover:bg-gray-100 rounded-lg" title="Скачать"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button>
+            </div>
+            <div class="bg-[var(--card-bg)] rounded-xl border border-gray-200 p-6 flex items-center justify-between hover:border-[var(--accent-color)] transition-colors">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center font-bold">STEP</div>
+                <div>
+                  <h4 class="font-semibold">Gear_v2_Source.step</h4>
+                  <p class="text-xs text-gray-500 mt-0.5">3.5 MB • Оригинальный CAD файл</p>
+                </div>
+              </div>
+              <button class="text-[var(--accent-color)] p-2 hover:bg-gray-100 rounded-lg" title="Скачать"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg></button>
+            </div>
+          </div>
+
+          <!-- Контент: Комментарии -->
+          <div id="tab-comments" class="tab-content hidden animate-[fadeIn_0.5s_ease-in-out]">
+            <div class="max-w-3xl">
+              <h3 class="text-xl font-bold mb-6">Комментарии сообщества</h3>
+              <div class="flex gap-4 mb-8">
+                <div class="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center"><svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/></svg></div>
+                <div class="flex-grow">
+                  <textarea class="w-full bg-[var(--card-bg)] border border-gray-200 rounded-xl p-4 focus:outline-none focus:border-[var(--accent-color)] focus:ring-1 focus:ring-[var(--accent-color)] resize-none" rows="3" placeholder="Оставьте комментарий к модели..."></textarea>
+                  <div class="flex justify-end mt-2">
+                    <button class="bg-[var(--accent-color)] text-white px-6 py-2 rounded-lg font-semibold hover:brightness-95 transition-all">Отправить</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Пример комментария -->
+              <div class="flex gap-4 mb-6 pb-6 border-b border-gray-100">
+                <img src="jpg/avatars/4.jpg" class="w-10 h-10 rounded-full object-cover flex-shrink-0" alt="Аватар">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-bold text-sm">Михаил З.</span>
+                    <span class="text-xs text-gray-400">1 неделю назад</span>
+                  </div>
+                  <p class="text-gray-600 text-sm">Отличная модель. Печатал из поликарбоната, села на вал идеально без расточки. Рекомендую!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- СЕКЦИЯ: FOOTER — НАЧАЛО -->
+  <footer class="bg-industrial-900 text-gray-400 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div class="lg:col-span-1">
+          <a href="index.html" class="flex items-center gap-2.5 mb-4">
+            <span class="w-9 h-9 rounded bg-[var(--accent-color)] flex items-center justify-center text-white font-extrabold text-sm">S3</span>
+            <span class="text-white font-bold text-lg">Smol<span class="text-[var(--accent-color)]">3d</span>Lab</span>
+          </a>
+          <p class="text-sm leading-relaxed">Smol 3D Lab  — промышленная 3D-печать и полный цикл производства от прототипа до серии.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Навигация</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="index.html#products" class="hover:text-white transition-colors">Продукты</a></li>
+            <li><a href="index.html#materials" class="hover:text-white transition-colors">Материалы</a></li>
+            <li><a href="models.html" class="hover:text-white transition-colors">3D Модели</a></li>
+            <li><a href="index.html#gallery" class="hover:text-white transition-colors">Галерея</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Услуги</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="fdm.html" class="hover:text-white transition-colors">FDM-печать</a></li>
+            <li><a href="sla.html" class="hover:text-white transition-colors">SLA-печать</a></li>
+            <li><a href="modeling.html" class="hover:text-white transition-colors">CAD-моделирование</a></li>
+            <li><a href="scanning.html" class="hover:text-white transition-colors">3D-сканирование</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Контакты</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="index.html#calculator" class="hover:text-white transition-colors">Получить расчёт</a></li>
+            <li><span>info@smol3dlab.ru</span></li>
+            <li><span>+7 (900) 123-25-34</span></li>
+            <li><span>г. Шахты, Россия</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+        <p>© 2026 Smol3dLab. Все права защищены.</p>
+        <div class="flex gap-6">
+          <a href="#" class="hover:text-white transition-colors">Политика конфиденциальности</a>
+          <a href="#" class="hover:text-white transition-colors">Условия использования</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- СЕКЦИЯ: FOOTER — КОНЕЦ -->
+
+  <script>
+    // --- Header scroll & Mobile menu (Стандартные скрипты проекта) ---
+    const siteHeader = document.getElementById('site-header');
+    window.addEventListener('scroll', () => { siteHeader.classList.toggle('header-scrolled', window.scrollY > 40); });
+
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileProductsToggle = document.getElementById('mobile-products-toggle');
+    const mobileProductsSubmenu = document.getElementById('mobile-products-submenu');
+    const mobileProductsChevron = document.getElementById('mobile-products-chevron');
+
+    menuBtn.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      if (isOpen) {
+        mobileProductsSubmenu.classList.add('hidden');
+        mobileProductsChevron.classList.remove('rotate-180');
+      }
+    });
+
+    mobileProductsToggle.addEventListener('click', () => {
+      const isOpen = !mobileProductsSubmenu.classList.contains('hidden');
+      mobileProductsSubmenu.classList.toggle('hidden', isOpen);
+      mobileProductsChevron.classList.toggle('rotate-180', !isOpen);
+    });
+
+    // --- Скрипт галереи миниатюр ---
+    function changeImage(element) {
+      const mainImage = document.getElementById('mainImage');
+      const clickedImgSrc = element.querySelector('img').src;
+      mainImage.src = clickedImgSrc;
+      
+      // Убираем обводку со всех и добавляем на активную
+      document.querySelectorAll('.thumbnail-img').forEach(el => {
+        el.classList.remove('border-2', 'border-[var(--accent-color)]');
+        el.classList.add('border', 'border-gray-200');
+      });
+      element.classList.remove('border', 'border-gray-200');
+      element.classList.add('border-2', 'border-[var(--accent-color)]');
+    }
+
+    // --- Скрипт вкладок (Tabs) ---
+    function openTab(evt, tabName) {
+      // Скрываем весь контент
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(content => content.classList.add('hidden'));
+
+      // Сбрасываем стили кнопок
+      const tabBtns = document.querySelectorAll('.tab-btn');
+      tabBtns.forEach(btn => {
+        btn.classList.remove('border-[var(--accent-color)]', 'text-[var(--accent-color)]', 'font-semibold');
+        btn.classList.add('border-transparent', 'text-gray-500', 'font-medium');
+      });
+
+      // Показываем текущую вкладку и добавляем активный стиль кнопке
+      document.getElementById(tabName).classList.remove('hidden');
+      evt.currentTarget.classList.remove('border-transparent', 'text-gray-500', 'font-medium');
+      evt.currentTarget.classList.add('border-[var(--accent-color)]', 'text-[var(--accent-color)]', 'font-semibold');
+    }
+  </script>
+</body>
+</html>

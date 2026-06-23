@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Заказ и расчет стоимости — Smol3dLab</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#f97316', dark: '#ea580c', light: '#fb923c' },
+            industrial: { 900: '#0f1419', 800: '#1a2332', 700: '#243044', 400: '#4a658e' },
+          }
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  
+  <style>
+    html, body { background-color: #1a1a2e; }
+    :root {
+      --accent-color: #f97316;
+      --main-bg: #ffffff;
+    }
+    .bg-layer {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: -1; pointer-events: none;
+      background-color: var(--main-bg);
+      background-image: url('voronoi.svg'); 
+      background-size: 2200px 2200px;
+      background-repeat: repeat;
+    }
+    /* Стили для формы */
+    .form-input {
+      background-color: var(--gray-700, #334155);
+      color: #FFFFFF;
+      border: 1px solid var(--gray-600, #475569);
+      border-radius: 6px;
+      padding: 12px 16px;
+      transition: border-color 0.2s ease;
+      width: 100%;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+  
+    /* iOS Safari: фикс 100vh (адресная строка Safari) */
+    @supports (-webkit-touch-callout: none) {
+      .h-screen { height: -webkit-fill-available; }
+      .min-h-screen { min-height: -webkit-fill-available; }
+    }
+    </style>
+  <script src="config.js"></script>
+</head>
+<body class="antialiased text-gray-900" style="font-family: 'Roboto', sans-serif;">
+
+  <div class="bg-layer"></div>
+
+  <header id="site-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-industrial-900/95 backdrop-blur-sm border-b border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-[72px]">
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <span class="w-9 h-9 rounded bg-[var(--accent-color)] flex items-center justify-center text-white font-extrabold text-sm tracking-tighter">S3</span>
+          <span class="text-white font-bold text-lg tracking-tight">Smol<span class="text-[var(--accent-color)]">3d</span>Lab</span>
+        </a>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <a href="index.html" class="text-sm text-gray-300 hover:text-white transition-colors px-3 py-2">На главную</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-28 pb-20 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <div class="mb-12">
+        <h1 class="text-3xl md:text-5xl font-extrabold text-industrial-900 bg-white inline-block px-4 py-2 rounded-lg shadow-sm">Расчет и заказ</h1>
+        <p class="mt-4 text-gray-700 text-lg max-w-2xl bg-white/80 p-4 rounded-lg backdrop-blur-sm">Заполните параметры вашей детали. Наш конфигуратор моментально рассчитает предварительную стоимость производства.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+        
+        <div class="lg:col-span-5 space-y-6">
+          <div class="bg-industrial-900 rounded-2xl p-8 shadow-2xl border border-industrial-800">
+            <h3 class="text-white font-bold text-xl mb-8">Гарантии производства</h3>
+            
+            <div class="space-y-8">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0">
+                  <svg class="w-6 h-6 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                </div>
+                <div>
+                  <h4 class="text-white font-bold text-sm mb-1">Погрешность до ±0.1 мм</h4>
+                  <p class="text-gray-400 text-xs leading-relaxed">Идеально для сборных механизмов, шестерней и функциональных узлов.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0">
+                  <svg class="w-6 h-6 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                </div>
+                <div>
+                  <h4 class="text-white font-bold text-sm mb-1">Инженерные полимеры</h4>
+                  <p class="text-gray-400 text-xs leading-relaxed">От ударопрочного ABS до гибкого TPU. Подберем оптимальный материал под ваши задачи.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0">
+                  <svg class="w-6 h-6 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </div>
+                <div>
+                  <h4 class="text-white font-bold text-sm mb-1">Скорость производства</h4>
+                  <p class="text-gray-400 text-xs leading-relaxed">Запуск в печать от 2 часов после согласования. Готовность партии от 48 часов.</p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0">
+                  <svg class="w-6 h-6 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                <div>
+                  <h4 class="text-white font-bold text-sm mb-1">Строгий NDA (Конфиденциальность)</h4>
+                  <p class="text-gray-400 text-xs leading-relaxed">Ваши 3D-модели, патенты и чертежи надежно защищены и никогда не передаются третьим лицам.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7">
+          <form id="order-form" class="bg-industrial-900 border border-slate-700 rounded-2xl overflow-hidden shadow-2xl" novalidate>
+            
+            <div class="p-6 sm:p-8 border-b border-slate-700 bg-industrial-800/50">
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-6 flex items-center gap-2">
+                <span class="w-6 h-6 rounded bg-[var(--accent-color)] text-white text-xs flex items-center justify-center font-bold">1</span>
+                Параметры печати
+              </h3>
+              
+              <div class="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label for="technology" class="block text-sm font-medium text-gray-300 mb-1.5">Технология</label>
+                  <select id="technology" name="technology" class="form-input calc-trigger">
+                    <option value="FDM">FDM — филамент</option>
+                    <option value="SLA">SLA — фотополимер</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="material" class="block text-sm font-medium text-gray-300 mb-1.5">Материал</label>
+                  <select id="material" name="material" class="form-input calc-trigger">
+                    <option value="PLA">PLA (стандарт)</option>
+                    <option value="PETG">PETG (прочный)</option>
+                    <option value="ABS">ABS (термостойкий)</option>
+                    <option value="Nylon">Nylon (инженерный)</option>
+                    <option value="TPU">TPU (гибкий)</option>
+                    <option value="Standard Resin">Standard Resin (SLA)</option>
+                    <option value="Tough Resin">Tough Resin (SLA)</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="post-processing" class="block text-sm font-medium text-gray-300 mb-1.5">Постобработка</label>
+                  <select id="post-processing" name="post-processing" class="form-input calc-trigger">
+                    <option value="Без обработки">Без обработки</option>
+                    <option value="Шлифовка">Шлифовка</option>
+                    <option value="Грунтовка и покраска">Грунтовка и покраска</option>
+                    <option value="Полировка">Полировка</option>
+                    <option value="Склейка / сборка">Склейка / сборка</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="quantity" class="block text-sm font-medium text-gray-300 mb-1.5">Количество (шт)</label>
+                  <input type="number" id="quantity" name="quantity" min="1" value="1" class="form-input calc-trigger" />
+                </div>
+                
+                <div class="sm:col-span-2">
+                  <label for="weight" class="block text-sm font-medium text-[var(--accent-color)] mb-1.5">Примерный вес 1 детали (в граммах)</label>
+                  <input type="number" id="weight" name="weight" min="0" placeholder="Например: 50" class="form-input calc-trigger border-[var(--accent-color)]/50 focus:border-[var(--accent-color)]" />
+                  <p class="mt-1 text-xs text-gray-400">Если знаете. Оставьте пустым, если нужна помощь инженера.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-6 sm:p-8 border-b border-slate-700">
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-5 flex items-center gap-2">
+                <span class="w-6 h-6 rounded bg-[var(--accent-color)] text-white text-xs flex items-center justify-center font-bold">2</span>
+                Файл модели
+              </h3>
+              <div>
+                <label for="file-link" class="block text-sm font-medium text-gray-300 mb-1.5">Ссылка на облако (.stl / .obj)</label>
+                <input type="url" id="file-link" name="file-link" placeholder="Яндекс.Диск, Google Drive, Облако Mail.ru" class="form-input" />
+              </div>
+            </div>
+
+            <div class="p-6 sm:p-8 border-b border-slate-700">
+              <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-5 flex items-center gap-2">
+                <span class="w-6 h-6 rounded bg-[var(--accent-color)] text-white text-xs flex items-center justify-center font-bold">3</span>
+                Контакты
+              </h3>
+              <div class="grid sm:grid-cols-2 gap-5">
+                <div>
+                  <label for="name" class="block text-sm font-medium text-gray-300 mb-1.5">Имя</label>
+                  <input type="text" id="name" required placeholder="Как к вам обращаться" class="form-input" />
+                </div>
+                <div>
+                  <label for="contact" class="block text-sm font-medium text-gray-300 mb-1.5">Телефон / Telegram</label>
+                  <input type="text" id="contact" required placeholder="+7 (___) ___-__-__" class="form-input" />
+                </div>
+              </div>
+            </div>
+
+            <div class="p-6 sm:p-8 bg-industrial-900 flex flex-col sm:flex-row items-center justify-between gap-6">
+              
+              <div class="text-center sm:text-left">
+                <span class="text-gray-400 text-sm uppercase tracking-wider font-semibold">Предварительно:</span>
+                <div id="dynamic-price" class="text-3xl font-extrabold text-[var(--accent-color)] mt-1">~ 0 руб.</div>
+              </div>
+
+              <button id="submit-btn" type="submit" class="w-full sm:w-auto px-8 py-4 rounded-lg bg-[var(--accent-color)] hover:brightness-95 text-white font-bold text-base transition-colors shadow-lg shadow-[var(--accent-color)]/20">
+                Оформить заказ ➔
+              </button>
+            </div>
+            
+            <div id="form-success" class="hidden p-4 bg-green-500/20 text-green-400 text-center text-sm">Заявка успешно отправлена! Мы свяжемся с вами.</div>
+            <div id="form-error" class="hidden p-4 bg-red-500/20 text-red-400 text-center text-sm" id="form-error-text">Произошла ошибка.</div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-industrial-900 text-gray-400 py-12 border-t border-white/5 relative z-10 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p class="text-sm">© 2026 Smol3dLab. Промышленная 3D-печать.</p>
+    </div>
+  </footer>
+
+  <script>
+    // --- Логика Калькулятора ---
+    const form = document.getElementById('order-form');
+    const priceDisplay = document.getElementById('dynamic-price');
+    const calcTriggers = document.querySelectorAll('.calc-trigger');
+
+    // Функция перерасчета
+    function calculatePrice() {
+      // Пытаемся получить конфиг (он должен загрузиться из config.js)
+      const config = window.SiteConfig?.business_logic?.pricing;
+      
+      // Если конфига еще нет (ошибка сети), ставим заглушку
+      if (!config) {
+        priceDisplay.textContent = 'Загрузка...';
+        return;
+      }
+
+      const tech = document.getElementById('technology').value;
+      const mat = document.getElementById('material').value;
+      const post = document.getElementById('post-processing').value;
+      const qty = parseInt(document.getElementById('quantity').value) || 1;
+      const weight = parseFloat(document.getElementById('weight').value) || 0;
+
+      // Если вес не указан, показываем 0 руб (чтобы не пугать случайными цифрами)
+      if (weight === 0) {
+        priceDisplay.textContent = '~ 0 руб.';
+        return;
+      }
+
+      // Математика из конфига
+      const base = config.base_rate_per_gram[tech] || 0;
+      const multiplier = config.material_multiplier[mat] || 1;
+      const postFee = config.post_processing_fixed_fee[post] || 0;
+
+      const total = ((weight * base * multiplier) + postFee) * qty;
+
+      // Форматируем красиво (1 500 руб.)
+      priceDisplay.textContent = `~ ${Math.round(total).toLocaleString('ru-RU')} руб.`;
+    }
+
+    // Вешаем слушатель на каждое изменение (ввод текста, выбор из списка)
+    calcTriggers.forEach(trigger => {
+      trigger.addEventListener('input', calculatePrice);
+      trigger.addEventListener('change', calculatePrice);
+    });
+
+    // Ждём загрузки config.json, затем считаем первый раз
+    function waitForConfig(attempts) {
+      if (window.SiteConfig) {
+        calculatePrice();
+      } else if (attempts > 0) {
+        setTimeout(() => waitForConfig(attempts - 1), 200);
+      } else {
+        // config так и не загрузился - показываем подсказку
+        priceDisplay.textContent = 'Укажите вес';
+      }
+    }
+    waitForConfig(15);
+
+    // --- Логика Web3Forms (Отправка на почту) ---
+    // (Оставим базовую заглушку, чтобы кнопка не обновляла страницу, 
+    // полную интеграцию с API скопируете из оригинального скрипта, когда вставите ключ)
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submit-btn');
+      const successMsg = document.getElementById('form-success');
+      const errorMsg = document.getElementById('form-error');
+      
+      // Скрываем прошлые сообщения
+      successMsg.classList.add('hidden');
+      errorMsg.classList.add('hidden');
+      
+      // Валидация: имя и контакт обязательны
+      const name = document.getElementById('name').value.trim();
+      const contact = document.getElementById('contact').value.trim();
+      if (!name || !contact) {
+        errorMsg.textContent = 'Пожалуйста, укажите имя и контакт для связи.';
+        errorMsg.classList.remove('hidden');
+        return;
+      }
+      
+      btn.textContent = 'Отправка...';
+      btn.disabled = true;
+
+      try {
+        const formData = new FormData(form);
+        // ⚠️ ЗАМЕНИТЕ 'YOUR_ACCESS_KEY' на ключ с сайта web3forms.com (бесплатно)
+        formData.append('access_key', 'YOUR_ACCESS_KEY');
+        formData.append('subject', 'Новая заявка на 3D-печать — Smol3dLab');
+        formData.append('from_name', 'Smol3dLab Сайт');
+        // Добавляем текущую цену в заявку
+        formData.append('calculated_price', document.getElementById('dynamic-price').textContent);
+
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData
+        });
+        const json = await res.json();
+
+        if (json.success) {
+          successMsg.classList.remove('hidden');
+          form.reset();
+          calculatePrice();
+        } else {
+          errorMsg.textContent = 'Ошибка отправки: ' + (json.message || 'попробуйте позже.');
+          errorMsg.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorMsg.textContent = 'Нет соединения. Попробуйте позже или напишите нам напрямую.';
+        errorMsg.classList.remove('hidden');
+      } finally {
+        btn.textContent = 'Оформить заказ ➔';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

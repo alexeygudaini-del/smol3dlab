@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Высокоточная SLA-печать | Smol3dLab</title>
+  <meta name="description" content="Услуги высокоточной SLA-печати фотополимерными смолами от Smol3dLab." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#f97316', dark: '#ea580c', light: '#fb923c' },
+            industrial: { 900: '#0f1419', 800: '#1a2332', 700: '#243044' },
+          },
+          fontFamily: {
+            sans: ['"Inter"', '"Segoe UI"', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    html, body { background-color: #1a1a2e; }
+    body {
+      background-color: var(--main-bg, #ffffff);
+      color: var(--text-color, #111827);
+    }
+    .header-scrolled {
+      background: rgba(15, 20, 25, 0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.06);
+    }
+    .reveal {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      animation: force-reveal 0s 0.8s forwards;
+    }
+    @keyframes force-reveal { to { opacity: 1; transform: none; } }
+    /* iOS Safari: фикс 100vh (адресная строка Safari) */
+    @supports (-webkit-touch-callout: none) {
+      .h-screen { height: -webkit-fill-available; }
+      .min-h-screen { min-height: -webkit-fill-available; }
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    /* Dropdown: Продукты */
+    .nav-dropdown {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateX(-50%) translateY(-0.5rem);
+      transform-origin: top;
+      transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+    }
+    .nav-dropdown-group:hover .nav-dropdown,
+    .nav-dropdown-group:focus-within .nav-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+    .nav-dropdown-chevron { transition: transform 0.2s ease; }
+    .nav-dropdown-group:hover .nav-dropdown-chevron,
+    .nav-dropdown-group:focus-within .nav-dropdown-chevron { transform: rotate(180deg); }
+  </style>
+  <script src="config.js"></script>
+</head>
+<body class="font-sans antialiased">
+
+  <header id="site-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-industrial-900/80 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-[72px]">
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <span class="w-9 h-9 rounded bg-[var(--accent-color)] flex items-center justify-center text-white font-extrabold text-sm tracking-tighter">S3</span>
+          <span class="text-white font-bold text-lg tracking-tight">Smol<span class="text-[var(--accent-color)]">3d</span>Lab</span>
+        </a>
+
+        <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-gray-300">
+          <div class="nav-dropdown-group relative">
+            <button type="button" class="flex items-center gap-1.5 hover:text-white transition-colors py-2" aria-expanded="false" aria-haspopup="true" id="products-nav-trigger">
+              Продукты
+              <svg class="nav-dropdown-chevron w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="nav-dropdown absolute left-1/2 top-full pt-3 z-50 origin-top">
+              <div class="w-64 bg-white/85 backdrop-blur-md rounded-xl shadow-lg border border-white/10 py-2 overflow-hidden">
+                <p class="px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-gray-400">Направления</p>
+                <a href="sla.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-violet-50 text-violet-600 text-[10px] font-bold flex items-center justify-center shrink-0">SLA</span>
+                  <span class="text-sm font-medium">Высокоточная печать (SLA)</span>
+                </a>
+                <a href="fdm.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-orange-50 text-[var(--accent-color)] text-[10px] font-bold flex items-center justify-center shrink-0">FDM</span>
+                  <span class="text-sm font-medium">Инженерная печать (FDM)</span>
+                </a>
+                <a href="modeling.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-blue-50 text-blue-600 text-[10px] font-bold flex items-center justify-center shrink-0">CAD</span>
+                  <span class="text-sm font-medium">3D-моделирование</span>
+                </a>
+                <a href="scanning.html" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-[var(--card-bg)] hover:text-[var(--accent-color)] transition-colors">
+                  <span class="w-8 h-8 rounded-md bg-emerald-50 text-emerald-600 text-[10px] font-bold flex items-center justify-center shrink-0">3D</span>
+                  <span class="text-sm font-medium">3D-сканирование</span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <a href="index.html#materials" class="hover:text-white transition-colors">Материалы</a>
+          <a href="models.html" class="hover:text-white transition-colors">3D Модели</a>
+          <a href="index.html#gallery" class="hover:text-white transition-colors">Галерея</a>
+        </nav>
+
+        <div class="flex items-center gap-2 sm:gap-3">
+          <a href="index.html#calculator" class="inline-flex items-center px-4 py-2 rounded-md bg-[var(--accent-color)] hover:brightness-95 text-white text-sm font-semibold transition-colors shadow-lg shadow-[var(--accent-color)]/20">
+            Получить расчёт
+          </a>
+          <button id="menu-btn" class="lg:hidden p-2 text-gray-300 hover:text-white" aria-label="Меню">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="mobile-menu" class="hidden lg:hidden border-t border-white/10 bg-industrial-900">
+      <nav class="px-4 py-4 flex flex-col gap-1 text-sm">
+        <div>
+          <button type="button" id="mobile-products-toggle" class="flex items-center justify-between w-full py-2.5 text-gray-300 hover:text-white transition-colors" aria-expanded="false">
+            <span>Продукты</span>
+            <svg id="mobile-products-chevron" class="w-4 h-4 text-gray-500 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="mobile-products-submenu" class="hidden pl-3 mt-1 mb-2 ml-2 border-l border-white/10 flex flex-col gap-0.5">
+            <a href="sla.html" class="mobile-link py-2 pl-3 text-white font-semibold">Высокоточная печать (SLA)</a>
+            <a href="fdm.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">Инженерная печать (FDM)</a>
+            <a href="modeling.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">3D-моделирование</a>
+            <a href="scanning.html" class="mobile-link py-2 pl-3 text-gray-400 hover:text-white transition-colors">3D-сканирование</a>
+          </div>
+        </div>
+        <a href="index.html#materials" class="mobile-link py-2.5 text-gray-300 hover:text-white">Материалы</a>
+        <a href="models.html" class="mobile-link py-2.5 text-gray-300 hover:text-white">3D Модели</a>
+        <a href="index.html#gallery" class="mobile-link py-2.5 text-gray-300 hover:text-white">Галерея</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden bg-industrial-900">
+      <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1631541909061-71e34a6d1dc8?q=80&w=2000')] bg-cover bg-center opacity-10"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-industrial-900 to-transparent"></div>
+      
+      <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-left">
+        <p class="inline-block px-4 py-1.5 rounded-full border border-white/20 text-[var(--accent-color)] text-xs font-semibold uppercase tracking-widest mb-6">
+          Стереолитография
+        </p>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 max-w-3xl">
+          Высокоточная <br class="hidden sm:block" />
+          <span class="text-[var(--accent-color)]">SLA-печать</span>
+        </h1>
+        <p class="text-lg text-gray-300 max-w-2xl leading-relaxed mb-10">
+          Микронная точность, идеальная гладкость поверхности и сложнейшая геометрия. Идеально для мастер-моделей, стоматологии, ювелирного дела и инженерных прототипов.
+        </p>
+      </div>
+    </section>
+
+    <section class="py-20 sm:py-28 bg-[var(--main-bg)]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div class="reveal">
+            <span class="text-[var(--accent-color)] text-sm font-semibold uppercase tracking-widest">Детализация</span>
+            <h2 class="mt-3 text-3xl sm:text-4xl font-bold mb-6">Бескомпромиссное качество поверхности</h2>
+            <p class="text-gray-600 leading-relaxed mb-6">
+              Технология SLA использует лазер или LCD-матрицу для послойного отверждения фотополимерной смолы. В отличие от классической печати филаментом (FDM), здесь нет видимых слоев — деталь получается идеально гладкой сразу после завершения процесса.
+            </p>
+            <ul class="space-y-4">
+              <li class="flex items-start gap-3">
+                <svg class="w-6 h-6 text-[var(--accent-color)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-gray-700">Толщина слоя от <strong>10 микрон</strong></span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-6 h-6 text-[var(--accent-color)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-gray-700">Огромный выбор инженерных, гибких и выжигаемых смол</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-6 h-6 text-[var(--accent-color)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span class="text-gray-700">Идеально подходит для литья и создания силиконовых форм</span>
+              </li>
+            </ul>
+          </div>
+          <div class="reveal rounded-2xl overflow-hidden border border-gray-200 shadow-xl" style="transition-delay: 0.1s">
+            <img src="https://images.unsplash.com/photo-1581092335397-9583eb92d232?q=80&w=1000" alt="Процесс SLA печати" class="w-full h-auto object-cover hover:scale-105 transition-transform duration-700">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 sm:py-28 bg-[var(--card-bg)] border-y border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 reveal">
+          <h2 class="text-3xl sm:text-4xl font-bold">Материалы для SLA-печати</h2>
+          <p class="mt-4 text-gray-600 max-w-xl mx-auto">Подберем оптимальную смолу под физические требования вашей детали</p>
+        </div>
+
+        <div class="reveal overflow-x-auto rounded-xl border border-gray-200 bg-[var(--main-bg)] shadow-sm">
+          <table class="w-full text-left min-w-[600px]">
+            <thead>
+              <tr class="bg-gray-100 text-sm font-bold uppercase tracking-wider border-b border-gray-200">
+                <th class="p-5">Материал</th>
+                <th class="p-5">Свойства</th>
+                <th class="p-5">Доступные цвета</th>
+                <th class="p-5">Применение</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm">
+              <tr class="border-b border-gray-100 hover:bg-[var(--card-bg)] transition-colors">
+                <td class="p-5 font-semibold">Standard Resin</td>
+                <td class="p-5">Высокая детализация, средняя прочность, низкая усадка</td>
+                <td class="p-5">Серый, Белый, Черный</td>
+                <td class="p-5">Визуальные макеты, фигурки, корпуса</td>
+              </tr>
+              <tr class="border-b border-gray-100 hover:bg-[var(--card-bg)] transition-colors">
+                <td class="p-5 font-semibold">ABS-Like Resin</td>
+                <td class="p-5">Ударопрочность, гибкость до излома (как пластик ABS)</td>
+                <td class="p-5">Серый, Прозрачный</td>
+                <td class="p-5">Инженерные детали, шестерни, защелки</td>
+              </tr>
+              <tr class="hover:bg-[var(--card-bg)] transition-colors">
+                <td class="p-5 font-semibold">Castable Resin</td>
+                <td class="p-5">Выгорает без остатка золы (нулевая зольность)</td>
+                <td class="p-5">Зеленый, Желтый</td>
+                <td class="p-5">Ювелирное дело, литье металлов</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 sm:py-28 bg-[var(--main-bg)]">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 reveal">
+          <span class="text-[var(--accent-color)] text-sm font-semibold uppercase tracking-widest">Портфолио</span>
+          <h2 class="mt-3 text-3xl sm:text-4xl font-bold">Примеры SLA-печати</h2>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <figure class="reveal group overflow-hidden rounded-lg border border-gray-200 bg-[var(--card-bg)]">
+            <div class="aspect-[4/3] overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1615826932727-41857908b981?q=80&w=800" alt="Инженерная деталь" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+            </div>
+            <figcaption class="p-4">
+              <h3 class="font-semibold text-sm">Инженерный крепеж</h3>
+              <p class="text-gray-500 text-xs mt-1">ABS-Like Resin • Слой 50 микрон</p>
+            </figcaption>
+          </figure>
+          <figure class="reveal group overflow-hidden rounded-lg border border-gray-200 bg-[var(--card-bg)]" style="transition-delay: 0.1s">
+            <div class="aspect-[4/3] overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1593369329712-401d898516ee?q=80&w=800" alt="Ювелирная модель" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+            </div>
+            <figcaption class="p-4">
+              <h3 class="font-semibold text-sm">Ювелирная мастер-модель</h3>
+              <p class="text-gray-500 text-xs mt-1">Castable Resin • Слой 20 микрон</p>
+            </figcaption>
+          </figure>
+          <figure class="reveal group overflow-hidden rounded-lg border border-gray-200 bg-[var(--card-bg)]" style="transition-delay: 0.2s">
+            <div class="aspect-[4/3] overflow-hidden">
+              <img src="https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800" alt="Архитектурный макет" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+            </div>
+            <figcaption class="p-4">
+              <h3 class="font-semibold text-sm">Архитектурный макет</h3>
+              <p class="text-gray-500 text-xs mt-1">Standard Resin • Слой 50 микрон</p>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 sm:py-28 bg-industrial-900 text-center relative overflow-hidden">
+      <div class="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">Готовы запустить проект в печать?</h2>
+        <p class="text-gray-400 mb-10 text-lg">Загрузите вашу 3D-модель в калькулятор, выберите материал, и мы подготовим точный расчет стоимости и сроков изготовления.</p>
+        <a href="index.html#calculator" class="inline-flex items-center px-8 py-4 rounded-md bg-[var(--accent-color)] hover:brightness-95 text-white text-lg font-bold transition-all shadow-xl shadow-[var(--accent-color)]/30 hover:scale-[1.02]">
+          Перейти к расчету
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-industrial-900 text-gray-400 py-16 border-t border-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
+        <div class="lg:col-span-1">
+          <a href="index.html" class="flex items-center gap-2.5 mb-4">
+            <span class="w-9 h-9 rounded bg-[var(--accent-color)] flex items-center justify-center text-white font-extrabold text-sm">S3</span>
+            <span class="text-white font-bold text-lg">Smol<span class="text-[var(--accent-color)]">3d</span>Lab</span>
+          </a>
+          <p class="text-sm leading-relaxed">Smol 3D Lab  — промышленная 3D-печать и полный цикл производства от прототипа до серии.</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Навигация</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="index.html#products" class="hover:text-white transition-colors">Продукты</a></li>
+            <li><a href="index.html#materials" class="hover:text-white transition-colors">Материалы</a></li>
+            <li><a href="index.html#services" class="hover:text-white transition-colors">Услуги</a></li>
+            <li><a href="index.html#gallery" class="hover:text-white transition-colors">Галерея</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Услуги</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="fdm.html" class="hover:text-white transition-colors">FDM-печать</a></li>
+            <li><a href="sla.html" class="hover:text-white transition-colors text-[var(--accent-color)]">SLA-печать</a></li>
+            <li><a href="modeling.html" class="hover:text-white transition-colors">CAD-моделирование</a></li>
+            <li><a href="scanning.html" class="hover:text-white transition-colors">3D-сканирование</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold text-sm mb-4 uppercase tracking-wider">Контакты</h4>
+          <ul class="space-y-2.5 text-sm">
+            <li><a href="index.html#calculator" class="hover:text-white transition-colors">Получить расчёт</a></li>
+            <li><span>info@smol3dlab.ru</span></li>
+            <li><span>+7 (900) 123-25-34</span></li>
+            <li><span>г. Шахты, Россия</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+        <p>© 2026 Smol3dLab. Все права защищены.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Скрипт для шапки и анимаций
+    const siteHeader = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+      siteHeader.classList.toggle('header-scrolled', window.scrollY > 40);
+    });
+
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileProductsToggle = document.getElementById('mobile-products-toggle');
+    const mobileProductsSubmenu = document.getElementById('mobile-products-submenu');
+    const mobileProductsChevron = document.getElementById('mobile-products-chevron');
+
+    menuBtn.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('hidden');
+      mobileMenu.classList.toggle('hidden');
+      if (isOpen) {
+        mobileProductsSubmenu.classList.add('hidden');
+        mobileProductsChevron.classList.remove('rotate-180');
+      }
+    });
+
+    mobileProductsToggle.addEventListener('click', () => {
+      const isOpen = !mobileProductsSubmenu.classList.contains('hidden');
+      mobileProductsSubmenu.classList.toggle('hidden', isOpen);
+      mobileProductsChevron.classList.toggle('rotate-180', !isOpen);
+    });
+
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0, rootMargin: '0px 0px 50px 0px' }
+    );
+    revealEls.forEach(el => revealObserver.observe(el));
+    setTimeout(() => {
+      revealEls.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) el.classList.add('visible');
+      });
+    }, 100);
+  </script>
+</body>
+</html>
