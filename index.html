@@ -236,41 +236,42 @@
 
     <div id="products"></div>
     
-    <section id="process" class="py-20 relative overflow-hidden bg-transparent">
+<section id="process" class="py-20 relative overflow-hidden bg-transparent">
       <div class="container mx-auto px-6 relative z-10 reveal">
-        <div class="text-center mb-16">
+        <div class="text-center mb-12 md:mb-16">
           <span class="text-[var(--accent-color)] font-bold uppercase tracking-wider text-sm">Процесс</span>
           <h2 class="text-2xl md:text-4xl text-white font-bold mt-2">Как мы работаем</h2>
           <p class="text-gray-400 mt-4">Четыре простых шага от цифровой модели до готовой детали</p>
         </div>
-        <div class="hidden md:flex justify-center gap-8 lg:gap-16 items-center relative pt-12 pb-24 max-w-5xl mx-auto">
+        
+        <div class="flex flex-col md:flex-row justify-center gap-12 md:gap-8 lg:gap-16 items-center relative pt-4 md:pt-12 pb-4 md:pb-24 max-w-5xl mx-auto">
           
-          <svg class="absolute top-1/2 left-0 w-full h-32 -translate-y-1/2 text-gray-300 z-0" preserveAspectRatio="none" viewBox="0 0 1000 100" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 6">
+          <svg class="absolute top-1/2 left-0 w-full h-32 -translate-y-1/2 text-gray-300 z-0 hidden md:block" preserveAspectRatio="none" viewBox="0 0 1000 100" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 6">
             <path d="M50,50 C200,-50 300,150 500,50 C700,-50 800,150 950,50" />
           </svg>
 
-          <div class="relative z-10 w-1/4 flex flex-col items-center text-center -mt-24 animate-float-1">
+          <div class="relative z-10 w-full md:w-1/4 flex flex-col items-center text-center md:-mt-24 animate-float-1">
             <div class="w-20 h-20 bg-white rounded-full border-4 border-[var(--accent-color)] flex items-center justify-center text-[var(--accent-color)] mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
               <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
             </div>
             <h3 class="font-bold text-lg mb-2 text-white">Загрузка файла</h3>
           </div>
 
-          <div class="relative z-10 w-1/4 flex flex-col items-center text-center mt-24 animate-float-2">
+          <div class="relative z-10 w-full md:w-1/4 flex flex-col items-center text-center md:mt-24 animate-float-2">
             <div class="w-20 h-20 bg-white rounded-full border-4 border-gray-500 flex items-center justify-center text-gray-500/70 mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
               <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
             </div>
             <h3 class="font-bold text-lg mb-2 text-white">Утверждение</h3>
           </div>
 
-          <div class="relative z-10 w-1/4 flex flex-col items-center text-center -mt-24 animate-float-3">
+          <div class="relative z-10 w-full md:w-1/4 flex flex-col items-center text-center md:-mt-24 animate-float-3">
             <div class="w-20 h-20 bg-white rounded-full border-4 border-[var(--accent-color)] flex items-center justify-center text-[var(--accent-color)] mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
               <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
             </div>
             <h3 class="font-bold text-lg mb-2 text-white">Печать</h3>
           </div>
 
-          <div class="relative z-10 w-1/4 flex flex-col items-center text-center mt-24 animate-float-4">
+          <div class="relative z-10 w-full md:w-1/4 flex flex-col items-center text-center md:mt-24 animate-float-4">
             <div class="w-20 h-20 bg-white rounded-full border-4 border-gray-500 flex items-center justify-center text-gray-500/70 mb-4 shadow-lg hover:scale-110 transition-transform duration-300">
               <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
             </div>
