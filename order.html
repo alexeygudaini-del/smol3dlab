@@ -47,20 +47,28 @@
       opacity: 0.15; 
     }
 
-    /* Стили для формы */
+    /* Сжатые стили для формы (специально под мобилки) */
     .form-input {
       background-color: var(--gray-700, #1e293b);
       color: #FFFFFF;
       border: 1px solid var(--gray-600, #334155);
       border-radius: 6px;
-      padding: 10px 14px; /* Чуть тоньше для мобилок */
+      padding: 8px 12px; /* Сделали поля тоньше */
       transition: border-color 0.2s ease;
       width: 100%;
-      font-size: 0.875rem; /* Текст инпутов чуть меньше */
+      font-size: 0.85rem; /* Шрифт чуть компактнее */
     }
     .form-input:focus {
       outline: none;
       border-color: var(--accent-color);
+    }
+
+    /* Возвращаем комфортный размер на ПК */
+    @media (min-width: 640px) {
+      .form-input {
+        padding: 10px 14px;
+        font-size: 0.875rem;
+      }
     }
   
     /* iOS Safari: фикс 100vh */
@@ -89,37 +97,37 @@
     </div>
   </header>
 
-  <main class="pt-24 md:pt-32 pb-20 relative z-10">
+  <main class="pt-20 md:pt-32 pb-16 relative z-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
-      <div class="mb-8 md:mb-12">
-        <h1 class="text-3xl md:text-5xl font-extrabold text-white mb-4">Расчет и заказ</h1>
-        <p class="text-gray-400 text-sm md:text-lg max-w-2xl bg-industrial-900/50 backdrop-blur-sm p-4 rounded-xl border border-white/5">
+      <div class="mb-6 md:mb-12">
+        <h1 class="text-2xl md:text-5xl font-extrabold text-white mb-3 md:mb-4">Расчет и заказ</h1>
+        <p class="text-gray-400 text-xs md:text-lg max-w-2xl bg-industrial-900/50 backdrop-blur-sm p-3 md:p-4 rounded-xl border border-white/5">
             Заполните параметры вашей детали. Наш конфигуратор моментально рассчитает предварительную стоимость производства.
         </p>
       </div>
 
-      <div class="flex flex-col lg:grid lg:grid-cols-12 gap-8 md:gap-12">
+      <div class="flex flex-col lg:grid lg:grid-cols-12 gap-6 md:gap-12">
         
         <div class="lg:col-span-7 w-full">
           <form id="order-form" class="bg-industrial-900/80 backdrop-blur-md border border-white/5 rounded-2xl overflow-hidden shadow-2xl" novalidate>
             
-            <div class="p-5 sm:p-8 border-b border-white/5">
-              <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-5 flex items-center gap-2">
-                <span class="w-6 h-6 rounded bg-[var(--accent-color)] text-white text-xs flex items-center justify-center font-bold">1</span>
+            <div class="p-4 sm:p-8 border-b border-white/5">
+              <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider mb-3 sm:mb-5 flex items-center gap-2">
+                <span class="w-5 h-5 sm:w-6 sm:h-6 rounded bg-[var(--accent-color)] text-white text-[10px] sm:text-xs flex items-center justify-center font-bold">1</span>
                 Параметры печати
               </h3>
               
-              <div class="grid sm:grid-cols-2 gap-4">
+              <div class="grid sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label for="technology" class="block text-xs font-medium text-gray-400 mb-1.5">Технология</label>
+                  <label for="technology" class="block text-[11px] sm:text-xs font-medium text-gray-400 mb-1 sm:mb-1.5">Технология</label>
                   <select id="technology" name="technology" class="form-input calc-trigger">
                     <option value="FDM">FDM — филамент</option>
                     <option value="SLA">SLA — фотополимер</option>
                   </select>
                 </div>
                 <div>
-                  <label for="material" class="block text-xs font-medium text-gray-400 mb-1.5">Материал</label>
+                  <label for="material" class="block text-[11px] sm:text-xs font-medium text-gray-400 mb-1 sm:mb-1.5">Материал</label>
                   <select id="material" name="material" class="form-input calc-trigger">
                     <option value="PLA">PLA (стандарт)</option>
                     <option value="PETG">PETG (прочный)</option>
@@ -131,7 +139,7 @@
                   </select>
                 </div>
                 <div>
-                  <label for="post-processing" class="block text-xs font-medium text-gray-400 mb-1.5">Постобработка</label>
+                  <label for="post-processing" class="block text-[11px] sm:text-xs font-medium text-gray-400 mb-1 sm:mb-1.5">Постобработка</label>
                   <select id="post-processing" name="post-processing" class="form-input calc-trigger">
                     <option value="Без обработки">Без обработки</option>
                     <option value="Шлифовка">Шлифовка</option>
@@ -141,106 +149,106 @@
                   </select>
                 </div>
                 <div>
-                  <label for="quantity" class="block text-xs font-medium text-gray-400 mb-1.5">Количество (шт)</label>
+                  <label for="quantity" class="block text-[11px] sm:text-xs font-medium text-gray-400 mb-1 sm:mb-1.5">Количество (шт)</label>
                   <input type="number" id="quantity" name="quantity" min="1" value="1" class="form-input calc-trigger" />
                 </div>
                 
-                <div class="sm:col-span-2 mt-2">
-                  <label for="weight" class="block text-xs font-bold text-[var(--accent-color)] mb-1.5">Примерный вес 1 детали (в граммах)</label>
+                <div class="sm:col-span-2 mt-1 sm:mt-2">
+                  <label for="weight" class="block text-[11px] sm:text-xs font-bold text-[var(--accent-color)] mb-1 sm:mb-1.5">Примерный вес 1 детали (в граммах)</label>
                   <input type="number" id="weight" name="weight" min="0" placeholder="Например: 50" class="form-input calc-trigger border-[var(--accent-color)]/30 focus:border-[var(--accent-color)]" />
-                  <p class="mt-1.5 text-[11px] text-gray-500">Если знаете. Оставьте пустым, если нужна помощь инженера.</p>
+                  <p class="mt-1 text-[10px] text-gray-500 leading-tight">Если знаете. Оставьте пустым, если нужна помощь.</p>
                 </div>
               </div>
             </div>
 
-            <div class="p-5 sm:p-8 border-b border-white/5 bg-white/[0.02]">
-              <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                <span class="w-6 h-6 rounded bg-[var(--accent-color)] text-white text-xs flex items-center justify-center font-bold">2</span>
+            <div class="p-4 sm:p-8 border-b border-white/5 bg-white/[0.02]">
+              <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider mb-3 sm:mb-4 flex items-center gap-2">
+                <span class="w-5 h-5 sm:w-6 sm:h-6 rounded bg-[var(--accent-color)] text-white text-[10px] sm:text-xs flex items-center justify-center font-bold">2</span>
                 Файл модели
               </h3>
               <div>
-                <label for="file-link" class="block text-xs font-medium text-gray-400 mb-1.5">Ссылка на облако (.stl / .obj)</label>
-                <input type="url" id="file-link" name="file-link" placeholder="Яндекс.Диск, Google Drive, Облако Mail.ru" class="form-input" />
+                <label for="file-link" class="block text-[11px] sm:text-xs font-medium text-gray-400 mb-1 sm:mb-1.5">Ссылка на облако (.stl / .obj)</label>
+                <input type="url" id="file-link" name="file-link" placeholder="Яндекс.Диск, Google Drive..." class="form-input" />
               </div>
             </div>
 
-            <div class="p-5 sm:p-8 border-b border-white/5">
-              <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                <span class="w-6 h-6 rounded bg-[var(--accent-color)] text-white text-xs flex items-center justify-center font-bold">3</span>
+            <div class="p-4 sm:p-8 border-b border-white/5">
+              <h3 class="text-xs sm:text-sm font-bold text-white uppercase tracking-wider mb-3 sm:mb-4 flex items-center gap-2">
+                <span class="w-5 h-5 sm:w-6 sm:h-6 rounded bg-[var(--accent-color)] text-white text-[10px] sm:text-xs flex items-center justify-center font-bold">3</span>
                 Контакты
               </h3>
-              <div class="grid sm:grid-cols-2 gap-4">
+              <div class="grid sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label for="name" class="block text-xs font-medium text-gray-400 mb-1.5">Имя</label>
+                  <label for="name" class="block text-[11px] sm:text-xs font-medium text-gray-400 mb-1 sm:mb-1.5">Имя</label>
                   <input type="text" id="name" required placeholder="Как к вам обращаться" class="form-input" />
                 </div>
                 <div>
-                  <label for="contact" class="block text-xs font-medium text-gray-400 mb-1.5">Телефон / Telegram</label>
+                  <label for="contact" class="block text-[11px] sm:text-xs font-medium text-gray-400 mb-1 sm:mb-1.5">Телефон / Telegram</label>
                   <input type="text" id="contact" required placeholder="+7 (___) ___-__-__" class="form-input" />
                 </div>
               </div>
             </div>
 
-            <div class="p-6 sm:p-8 bg-black/20 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div class="p-5 sm:p-8 bg-black/20 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
               
               <div class="text-center sm:text-left">
-                <span class="text-gray-500 text-xs uppercase tracking-wider font-bold">Предварительно:</span>
-                <div id="dynamic-price" class="text-3xl font-extrabold text-[var(--accent-color)] mt-1">~ 0 руб.</div>
+                <span class="text-gray-500 text-[10px] sm:text-xs uppercase tracking-wider font-bold">Предварительно:</span>
+                <div id="dynamic-price" class="text-2xl sm:text-3xl font-extrabold text-[var(--accent-color)] mt-0.5 sm:mt-1">~ 0 руб.</div>
               </div>
 
-              <button id="submit-btn" type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-[var(--accent-color)] hover:brightness-95 text-white font-bold text-sm transition-colors shadow-lg shadow-[var(--accent-color)]/20">
+              <button id="submit-btn" type="submit" class="w-full sm:w-auto px-6 py-3 sm:px-8 sm:py-3.5 rounded-lg bg-[var(--accent-color)] hover:brightness-95 text-white font-bold text-sm transition-colors shadow-lg shadow-[var(--accent-color)]/20">
                 Оформить заказ ➔
               </button>
             </div>
             
-            <div id="form-success" class="hidden p-4 bg-green-500/10 border-t border-green-500/20 text-green-400 text-center text-sm">Заявка успешно отправлена! Мы свяжемся с вами.</div>
-            <div id="form-error" class="hidden p-4 bg-red-500/10 border-t border-red-500/20 text-red-400 text-center text-sm" id="form-error-text">Произошла ошибка.</div>
+            <div id="form-success" class="hidden p-3 sm:p-4 bg-green-500/10 border-t border-green-500/20 text-green-400 text-center text-xs sm:text-sm">Заявка успешно отправлена! Мы свяжемся с вами.</div>
+            <div id="form-error" class="hidden p-3 sm:p-4 bg-red-500/10 border-t border-red-500/20 text-red-400 text-center text-xs sm:text-sm" id="form-error-text">Произошла ошибка.</div>
 
           </form>
         </div>
 
         <div class="lg:col-span-5 w-full space-y-6">
-          <div class="bg-industrial-900/80 backdrop-blur-md rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/5 sticky top-28">
-            <h3 class="text-white font-bold text-xl mb-6">Гарантии производства</h3>
+          <div class="bg-industrial-900/80 backdrop-blur-md rounded-2xl p-5 sm:p-8 shadow-2xl border border-white/5 sticky top-28">
+            <h3 class="text-white font-bold text-lg sm:text-xl mb-5 sm:mb-6">Гарантии производства</h3>
             
-            <div class="space-y-6">
-              <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0">
-                  <svg class="w-5 h-5 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            <div class="space-y-5 sm:space-y-6">
+              <div class="flex items-start gap-3 sm:gap-4">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0 mt-1 sm:mt-0">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                 </div>
                 <div>
-                  <h4 class="text-white font-bold text-sm mb-1">Погрешность до ±0.1 мм</h4>
-                  <p class="text-gray-400 text-xs leading-relaxed">Идеально для сборных механизмов, шестерней и функциональных узлов.</p>
+                  <h4 class="text-white font-bold text-xs sm:text-sm mb-1">Погрешность до ±0.1 мм</h4>
+                  <p class="text-gray-400 text-[11px] sm:text-xs leading-relaxed">Идеально для сборных механизмов, шестерней и функциональных узлов.</p>
                 </div>
               </div>
 
-              <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0">
-                  <svg class="w-5 h-5 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+              <div class="flex items-start gap-3 sm:gap-4">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0 mt-1 sm:mt-0">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                 </div>
                 <div>
-                  <h4 class="text-white font-bold text-sm mb-1">Инженерные полимеры</h4>
-                  <p class="text-gray-400 text-xs leading-relaxed">От ударопрочного ABS до гибкого TPU. Подберем оптимальный материал под ваши задачи.</p>
+                  <h4 class="text-white font-bold text-xs sm:text-sm mb-1">Инженерные полимеры</h4>
+                  <p class="text-gray-400 text-[11px] sm:text-xs leading-relaxed">От ударопрочного ABS до гибкого TPU. Подберем оптимальный материал под ваши задачи.</p>
                 </div>
               </div>
 
-              <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0">
-                  <svg class="w-5 h-5 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+              <div class="flex items-start gap-3 sm:gap-4">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0 mt-1 sm:mt-0">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                 </div>
                 <div>
-                  <h4 class="text-white font-bold text-sm mb-1">Скорость производства</h4>
-                  <p class="text-gray-400 text-xs leading-relaxed">Запуск в печать от 2 часов после согласования. Готовность партии от 48 часов.</p>
+                  <h4 class="text-white font-bold text-xs sm:text-sm mb-1">Скорость производства</h4>
+                  <p class="text-gray-400 text-[11px] sm:text-xs leading-relaxed">Запуск в печать от 2 часов после согласования. Готовность партии от 48 часов.</p>
                 </div>
               </div>
 
-              <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0">
-                  <svg class="w-5 h-5 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+              <div class="flex items-start gap-3 sm:gap-4">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-[var(--accent-color)]/10 flex items-center justify-center shrink-0 mt-1 sm:mt-0">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5 text-[var(--accent-color)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
                 </div>
                 <div>
-                  <h4 class="text-white font-bold text-sm mb-1">Строгий NDA (Конфиденциальность)</h4>
-                  <p class="text-gray-400 text-xs leading-relaxed">Ваши 3D-модели, патенты и чертежи надежно защищены и никогда не передаются третьим лицам.</p>
+                  <h4 class="text-white font-bold text-xs sm:text-sm mb-1">Строгий NDA (Конфиденциальность)</h4>
+                  <p class="text-gray-400 text-[11px] sm:text-xs leading-relaxed">Ваши 3D-модели, патенты и чертежи надежно защищены и никогда не передаются третьим лицам.</p>
                 </div>
               </div>
             </div>
@@ -253,7 +261,7 @@
 
   <footer class="bg-industrial-900 text-gray-500 py-8 border-t border-white/5 relative z-20 mt-auto">
     <div class="max-w-7xl mx-auto px-4 text-center">
-      <p class="text-xs">© 2026 Smol3dLab. Промышленная 3D-печать.</p>
+      <p class="text-[10px] sm:text-xs">© 2026 Smol3dLab. Промышленная 3D-печать.</p>
     </div>
   </footer>
 
